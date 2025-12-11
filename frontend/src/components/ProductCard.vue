@@ -1,14 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-
-interface Product {
-    id: number;
-    name: string;
-    description: string;
-    category: string;
-    price: number;
-    stock_quantity: number;
-}
+import type { Product } from '@/types/product';
 
 const props = defineProps<{
     product: Product;
@@ -29,17 +21,30 @@ const priceFormatted = computed(() => {
 
 <template>
     <div class="group relative bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex flex-col h-full">
-        <!-- Badge -->
-        <div class="absolute top-4 right-4 flex items-center gap-2">
-            <span :class="stockStatus.color" class="w-2.5 h-2.5 rounded-full animate-pulse"></span>
-            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ stockStatus.label }} ({{ product.stock_quantity }})</span>
+
+
+        <!-- Image -->
+        <div class="mb-4 aspect-square overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-700">
+            <img 
+                v-if="product.image" 
+                :src="`http://127.0.0.1:8000${product.image}`" 
+                :alt="product.name"
+                class="w-full h-full object-cover object-center transform hover:scale-110 transition-transform duration-500"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            </div>
         </div>
 
-        <!-- Category -->
-        <div class="mb-2">
+        <!-- Category & Badge -->
+        <div class="mb-2 flex items-center justify-between">
             <span class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
                 {{ product.category }}
             </span>
+            <div class="flex items-center gap-2">
+                <span :class="stockStatus.color" class="w-2 h-2 rounded-full"></span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ stockStatus.label }}</span>
+            </div>
         </div>
 
         <!-- Content -->

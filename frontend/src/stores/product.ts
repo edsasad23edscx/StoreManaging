@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
 import api from '@/lib/axios';
 import { ref } from 'vue';
+import type { Product } from '@/types/product';
 
 export const useProductStore = defineStore('product', () => {
-    const products = ref<any[]>([]);
+    const products = ref<Product[]>([]);
     const loading = ref(false);
 
     async function fetchProducts(filters: { search?: string, category?: string } = {}) {
