@@ -43,7 +43,7 @@ const priceFormatted = computed(() => {
             </span>
             <div class="flex items-center gap-2">
                 <span :class="stockStatus.color" class="w-2 h-2 rounded-full"></span>
-                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ stockStatus.label }}</span>
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">{{ stockStatus.label }} ({{ product.stock_quantity }})</span>
             </div>
         </div>
 

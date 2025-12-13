@@ -32,6 +32,11 @@ class ProductController extends Controller
             'stock_quantity' => 'required|integer|min:0',
         ]);
 
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = '/storage/' . $path;
+        }
+
         $product = Product::create($validated);
 
         return response()->json($product, 201);
@@ -50,7 +55,13 @@ class ProductController extends Controller
             'category' => 'sometimes|required|string|max:50',
             'price' => 'sometimes|required|numeric|min:0',
             'stock_quantity' => 'sometimes|required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $validated['image'] = '/storage/' . $path;
+        }
 
         $product->update($validated);
 

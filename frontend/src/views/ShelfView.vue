@@ -17,7 +17,7 @@ const search = ref('');
 const category = ref('');
 const showModal = ref(false);
 const editingProduct = ref<any>(null);
-const categories = ['Electronics', 'Groceries', 'Clothing', 'Books', 'Tools'];
+const categories = ['Warzywa', 'Owoce', 'Mięso', 'Nabiał', 'Pieczywo', 'Napoje', 'Inne'];
 
 // Search Debounce could be added here, for now simpler watch
 let searchTimeout: any;
@@ -80,7 +80,7 @@ const handleDelete = async (product: any) => {
                 <div class="flex-1 w-full md:w-auto md:max-w-xl flex gap-3">
                     <BaseInput id="search" v-model="search" placeholder="Search products..." class="flex-1" />
                     <select v-model="category" class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none">
-                        <option value="">All Categories</option>
+                        <option value="">Wszystkie Kategorie</option>
                         <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
                     </select>
                 </div>
