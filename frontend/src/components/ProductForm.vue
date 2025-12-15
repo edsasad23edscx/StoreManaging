@@ -34,8 +34,16 @@ const previewUrl = ref<string | null>(null);
 const handleFileUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
     if (target.files && target.files[0]) {
-        fileInput.value = target.files[0];
-        previewUrl.value = URL.createObjectURL(target.files[0]);
+        const file = target.files[0];
+        if (file.size > 2 * 1024 * 1024) {
+             alert("Plik jest zbyt duży. Maksymalny rozmiar to 2MB.");
+             target.value = ''; // Reset input
+             fileInput.value = null;
+             previewUrl.value = null;
+             return;
+        }
+        fileInput.value = file;
+        previewUrl.value = URL.createObjectURL(file);
     }
 };
 
@@ -53,7 +61,6 @@ const handleSubmit = () => {
 
     // Identify if it's an edit or create
     if (props.initialData?.id) {
-        formData.append('_method', 'PUT'); // Laravel method spoofing for FormData
         // emit custom event because we can't pass FormData to json listener easily if expected structure differs
         // easier to emit tuple or object
     }

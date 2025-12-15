@@ -49,23 +49,33 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'category' => 'sometimes|required|string|max:50',
-            'price' => 'sometimes|required|numeric|min:0',
-            'stock_quantity' => 'sometimes|required|integer|min:0',
-            'image' => 'nullable|image|max:2048',
-        ]);
+        try {
+            \Illuminate\Support\Facades\Log::info('Update Request Data:', $request->all());
+            \Illuminate\Support\Facades\Log::info('Update Request Files:', $request->allFiles());
+            
+            $validated = $request->validate([
+                'name' => 'sometimes|required|string|max:255',
+                'description' => 'nullable|string',
+                'category' => 'sometimes|required|string|max:50',
+                'price' => 'sometimes|required|numeric|min:0',
+                'stock_quantity' => 'sometimes|required|integer|min:0',
+                'image' => 'nullable|image|max:2048',
+            ]);
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image'] = '/storage/' . $path;
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('products', 'public');
+                $validated['image'] = '/storage/' . $path;
+            }
+
+            $product->update($validated);
+
+            return response()->json($product);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Product update failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to update product', 'error' => $e->getMessage()], 500);
         }
-
-        $product->update($validated);
-
-        return response()->json($product);
     }
 
     public function destroy(Product $product)

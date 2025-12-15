@@ -28,46 +28,48 @@ const handleLogin = async () => {
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center relative overflow-hidden bg-slate-900">
-        <!-- Animated Background Effects -->
-         <div class="absolute inset-0 z-0">
-            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-indigo-600/20 rounded-full blur-[100px] animate-pulse"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-purple-600/20 rounded-full blur-[100px] animate-pulse delay-700"></div>
-         </div>
-
+    <div class="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
          <!-- Login Card -->
-         <div class="relative z-10 w-full max-w-md p-8 md:p-10 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
-            <div class="mb-10 text-center">
-                <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Wirtualna Półka</h1>
-                <p class="text-slate-400">Warehouse Management System</p>
+         <div class="relative z-10 w-full max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-100">
+            <div class="mb-8 text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white font-bold text-xl mb-4 shadow-lg shadow-indigo-200">W</div>
+                <h1 class="text-2xl font-bold text-slate-900 mb-1">Wirtualna Półka</h1>
+                <p class="text-slate-500 text-sm">System Zarządzania Magazynem</p>
             </div>
 
-            <form @submit.prevent="handleLogin" class="space-y-6">
+            <form @submit.prevent="handleLogin" class="space-y-5">
                 <BaseInput 
                     id="email" 
                     v-model="email" 
-                    label="Email Address" 
+                    label="Nazwa użytkownika" 
                     type="email" 
-                    placeholder="admin@store.com" 
+                    placeholder="Wpisz nazwę użytkownika" 
                 />
                 
                 <BaseInput 
                     id="password" 
                     v-model="password" 
-                    label="Password" 
+                    label="Hasło" 
                     type="password" 
-                    placeholder="••••••••" 
+                    placeholder="Wpisz hasło" 
                 />
                 
-                <div v-if="error" class="text-red-400 text-sm text-center bg-red-500/10 p-3 rounded-lg border border-red-500/20">
+                <div v-if="error" class="text-red-600 text-sm text-center bg-red-50 p-3 rounded-lg border border-red-100">
                     {{ error }}
                 </div>
 
                 <div class="pt-2">
-                    <BaseButton type="submit" variant="primary" class="w-full justify-center !py-3 !text-lg" :disabled="loading">
+                    <BaseButton type="submit" variant="primary" class="w-full justify-center !py-2.5 !bg-indigo-600 hover:!bg-indigo-700 !text-white !font-medium" :disabled="loading">
                         <span v-if="loading" class="animate-spin mr-2">⟳</span>
-                        {{ loading ? 'Signing in...' : 'Sign In' }}
+                        {{ loading ? 'Logowanie...' : 'Login' }}
                     </BaseButton>
+                </div>
+
+                <!-- Demo Credentials -->
+                <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
+                    <p class="font-semibold mb-1">Demo credentials:</p>
+                    <p>Username: demo</p>
+                    <p>Password: demo</p>
                 </div>
             </form>
          </div>

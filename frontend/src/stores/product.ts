@@ -35,7 +35,14 @@ export const useProductStore = defineStore('product', () => {
 
     async function updateProduct(id: number, data: any) {
         try {
-            const response = await api.put(`/products/${id}`, data);
+            let response;
+            if (data instanceof FormData) {
+                data.append('_method', 'PUT');
+                response = await api.post(`/products/${id}`, data);
+            } else {
+                response = await api.put(`/products/${id}`, data);
+            }
+
             const index = products.value.findIndex(p => p.id === id);
             if (index !== -1) {
                 products.value[index] = response.data;

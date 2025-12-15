@@ -55,8 +55,11 @@ const handleSubmit = async (formData: any) => {
             await productStore.addProduct(formData);
         }
         showModal.value = false;
-    } catch (e) {
-        alert('Error saving product');
+    } catch (e: any) {
+        console.error(e);
+        const message = e.response?.data?.message || 'Wystąpił błąd podczas zapisywania produktu.';
+        const details = e.response?.data?.error ? '\nDetails: ' + e.response.data.error : (e.response?.data?.errors ? '\n' + JSON.stringify(e.response.data.errors, null, 2) : '');
+        alert(message + details);
     }
 };
 
