@@ -20,7 +20,7 @@ const handleLogin = async () => {
         router.push({ name: 'shelf' });
     } catch (e: any) {
         console.error(e);
-        error.value = e.response?.data?.message || e.message || 'An error occurred';
+        error.value = e.response?.data?.message || e.message || 'Wystąpił błąd';
     } finally {
         loading.value = false;
     }
@@ -61,15 +61,15 @@ const handleLogin = async () => {
                 <div class="pt-2">
                     <BaseButton type="submit" variant="primary" class="w-full justify-center !py-2.5 !bg-indigo-600 hover:!bg-indigo-700 !text-white !font-medium" :disabled="loading">
                         <span v-if="loading" class="animate-spin mr-2">⟳</span>
-                        {{ loading ? 'Logowanie...' : 'Login' }}
+                        {{ loading ? 'Logowanie...' : 'Zaloguj się' }}
                     </BaseButton>
                 </div>
 
                 <!-- Demo Credentials -->
                 <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-xs text-slate-600">
-                    <p class="font-semibold mb-1">Demo credentials:</p>
-                    <p>Username: demo</p>
-                    <p>Password: demo</p>
+                    <p class="font-semibold mb-1">Dane logowania demo:</p>
+                    <p>Użytkownik: demo</p>
+                    <p>Hasło: demo</p>
                 </div>
             </form>
          </div>

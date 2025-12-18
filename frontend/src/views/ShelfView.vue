@@ -64,7 +64,7 @@ const handleSubmit = async (formData: any) => {
 };
 
 const handleDelete = async (product: any) => {
-    if (confirm('Are you sure you want to delete ' + product.name + '?')) {
+    if (confirm('Czy na pewno chcesz usunąć ' + product.name + '?')) {
         await productStore.deleteProduct(product.id);
     }
 };
@@ -81,7 +81,7 @@ const handleDelete = async (product: any) => {
                 </div>
 
                 <div class="flex-1 w-full md:w-auto md:max-w-xl flex gap-3">
-                    <BaseInput id="search" v-model="search" placeholder="Search products..." class="flex-1" />
+                    <BaseInput id="search" v-model="search" placeholder="Szukaj produktów..." class="flex-1" />
                     <select v-model="category" class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none">
                         <option value="">Wszystkie Kategorie</option>
                         <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -90,7 +90,7 @@ const handleDelete = async (product: any) => {
 
                 <div class="flex items-center gap-3">
                      <span class="hidden md:block text-sm text-slate-500 dark:text-slate-400 font-medium">{{ auth.user?.name }}</span>
-                     <BaseButton variant="secondary" @click="handleLogout" class="!py-2 !px-3 text-sm">Logout</BaseButton>
+                     <BaseButton variant="secondary" @click="handleLogout" class="!py-2 !px-3 text-sm">Wyloguj</BaseButton>
                 </div>
             </div>
         </nav>
@@ -98,9 +98,9 @@ const handleDelete = async (product: any) => {
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto px-6 py-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Shelf Inventory</h2>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Magazyn Sklepu</h2>
                 <BaseButton @click="openAddModal">
-                    <span class="text-lg mr-1">+</span> Add Product
+                    <span class="text-lg mr-1">+</span> Dodaj Produkt
                 </BaseButton>
             </div>
 
@@ -122,13 +122,13 @@ const handleDelete = async (product: any) => {
 
             <!-- Empty State -->
             <div v-else class="text-center py-20 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
-                <p class="text-xl text-slate-400 font-medium">No products found on the shelf.</p>
-                <p class="text-slate-500 mt-2">Try adjusting your search or add a new product.</p>
+                <p class="text-xl text-slate-400 font-medium">Brak produktów na półce.</p>
+                <p class="text-slate-500 mt-2">Spróbuj zmienić wyszukiwanie lub dodaj nowy produkt.</p>
             </div>
         </main>
 
         <!-- Modal -->
-        <BaseModal :isOpen="showModal" :title="editingProduct ? 'Edit Product' : 'Add New Product'" @close="showModal = false">
+        <BaseModal :isOpen="showModal" :title="editingProduct ? 'Edytuj Produkt' : 'Dodaj Nowy Produkt'" @close="showModal = false">
             <ProductForm 
                 :initialData="editingProduct" 
                 :loading="productStore.loading"

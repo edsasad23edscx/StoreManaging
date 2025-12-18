@@ -73,7 +73,7 @@ const handleSubmit = () => {
     <form @submit.prevent="handleSubmit" class="space-y-4">
         <!-- Image Upload -->
         <div class="flex flex-col gap-1.5">
-            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Product Image</label>
+            <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Zdjęcie Produktu</label>
             <div class="flex items-center gap-4">
                 <div v-if="previewUrl || initialData?.image" class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
                     <img :src="previewUrl || `http://127.0.0.1:8000${initialData.image}`" class="w-full h-full object-cover">
