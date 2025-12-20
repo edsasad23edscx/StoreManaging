@@ -61,6 +61,7 @@ class ProductFactory extends Factory
             'category' => $selected['category'],
             'price' => $this->faker->randomFloat(2, 1, 30),
             'stock_quantity' => $this->faker->numberBetween(1, 100),
+            'minimum_stock' => $this->faker->numberBetween(3, 10),
         ];
     }
 }

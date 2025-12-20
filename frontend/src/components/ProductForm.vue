@@ -18,6 +18,7 @@ const form = ref({
   category: '',
   price: '',
   stock_quantity: '',
+  minimum_stock: '',
 })
 
 const imageUrl = computed(() => {
@@ -35,13 +36,18 @@ watch(
     if (newVal) {
       form.value = { ...newVal }
     } else {
-      form.value = { name: '', description: '', category: '', price: '', stock_quantity: '' }
+      form.value = {
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        stock_quantity: '',
+        minimum_stock: '',
+      }
     }
   },
   { immediate: true },
 )
-
-const categories = ['Warzywa', 'Owoce', 'Mięso', 'Nabiał', 'Pieczywo', 'Napoje', 'Inne']
 
 const fileInput = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
@@ -69,6 +75,7 @@ const handleSubmit = () => {
   formData.append('category', form.value.category)
   formData.append('price', form.value.price)
   formData.append('stock_quantity', form.value.stock_quantity)
+  formData.append('minimum_stock', form.value.minimum_stock)
 
   if (fileInput.value) {
     formData.append('image', fileInput.value)
@@ -126,6 +133,21 @@ const handleSubmit = () => {
     <div class="grid grid-cols-2 gap-4">
       <BaseInput id="price" v-model="form.price" label="Cena (PLN)" type="number" step="0.01" />
       <BaseInput id="stock" v-model="form.stock_quantity" label="Ilość w magazynie" type="number" />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label class="text-sm font-medium text-slate-700 dark:text-slate-300"
+        >Minimalna ilość w magazynie</label
+      >
+      <input
+        v-model="form.minimum_stock"
+        type="number"
+        placeholder="np. 5"
+        class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+      />
+      <p class="text-xs text-slate-500">
+        Będzie wyświetlany alert gdy ilość spadnie poniżej tej wartości
+      </p>
     </div>
 
     <div class="flex flex-col gap-1.5">

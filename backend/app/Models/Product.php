@@ -16,10 +16,12 @@ class Product extends Model
         'category',
         'price',
         'stock_quantity',
+        'minimum_stock',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'stock_quantity' => 'integer',
+        'minimum_stock' => 'integer',
     ];
 }
