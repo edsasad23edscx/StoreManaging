@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
+import api from '@/lib/axios'
+import type { Category } from '@/types/product'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import CategoryManagement from '@/components/CategoryManagement.vue'
 
 const props = defineProps<{
   initialData?: any
@@ -11,14 +14,30 @@ const props = defineProps<{
 const emit = defineEmits(['submit'])
 
 const API_BASE_URL = 'http://localhost:8000'
+const categories = ref<Category[]>([])
+const showCategoryManagement = ref(false)
+const fileError = ref('')
 
 const form = ref({
   name: '',
   description: '',
-  category: '',
+  category_id: null as number | null,
   price: '',
   stock_quantity: '',
   minimum_stock: '',
+})
+
+const loadCategories = async () => {
+  try {
+    const response = await api.get('/categories')
+    categories.value = response.data
+  } catch (error) {
+    console.error('Failed to load categories', error)
+  }
+}
+
+onMounted(async () => {
+  await loadCategories()
 })
 
 const imageUrl = computed(() => {
@@ -39,7 +58,7 @@ watch(
       form.value = {
         name: '',
         description: '',
-        category: '',
+        category_id: null,
         price: '',
         stock_quantity: '',
         minimum_stock: '',
@@ -54,10 +73,11 @@ const previewUrl = ref<string | null>(null)
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
+  fileError.value = ''
   if (target.files && target.files[0]) {
     const file = target.files[0]
     if (file.size > 2 * 1024 * 1024) {
-      alert('Plik jest zbyt duży. Maksymalny rozmiar to 2MB.')
+      fileError.value = 'Plik jest zbyt duży. Maksymalny rozmiar to 2MB.'
       target.value = '' // Reset input
       fileInput.value = null
       previewUrl.value = null
@@ -69,22 +89,19 @@ const handleFileUpload = (event: Event) => {
 }
 
 const handleSubmit = () => {
+  fileError.value = ''
   const formData = new FormData()
   formData.append('name', form.value.name)
   formData.append('description', form.value.description)
-  formData.append('category', form.value.category)
+  if (form.value.category_id !== null) {
+    formData.append('category_id', form.value.category_id.toString())
+  }
   formData.append('price', form.value.price)
   formData.append('stock_quantity', form.value.stock_quantity)
   formData.append('minimum_stock', form.value.minimum_stock)
 
   if (fileInput.value) {
     formData.append('image', fileInput.value)
-  }
-
-  // Identify if it's an edit or create
-  if (props.initialData?.id) {
-    // emit custom event because we can't pass FormData to json listener easily if expected structure differs
-    // easier to emit tuple or object
   }
 
   emit('submit', formData)
@@ -110,6 +127,7 @@ const handleSubmit = () => {
           class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
         />
       </div>
+      <p v-if="fileError" class="text-red-600 dark:text-red-400 text-sm">{{ fileError }}</p>
     </div>
 
     <BaseInput
@@ -121,13 +139,23 @@ const handleSubmit = () => {
 
     <div class="flex flex-col gap-1.5">
       <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Kategoria</label>
-      <select
-        v-model="form.category"
-        class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
-      >
-        <option value="" disabled>Wybierz kategorię</option>
-        <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-      </select>
+      <div class="flex gap-2">
+        <select
+          v-model="form.category_id"
+          class="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+        >
+          <option value="">Inne</option>
+          <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+        </select>
+        <button
+          @click="showCategoryManagement = true"
+          type="button"
+          class="px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
+          title="Zarządzaj kategoriami"
+        >
+          ⚙️
+        </button>
+      </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
@@ -165,4 +193,11 @@ const handleSubmit = () => {
       </BaseButton>
     </div>
   </form>
+
+  <!-- Category Management Modal -->
+  <CategoryManagement
+    :isOpen="showCategoryManagement"
+    @close="showCategoryManagement = false"
+    @updated="loadCategories"
+  />
 </template>

@@ -60,7 +60,7 @@ const priceFormatted = computed(() => {
       <span
         class="px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider"
       >
-        {{ product.category }}
+        {{ product.category?.name || 'Inne' }}
       </span>
       <div class="flex items-center gap-2">
         <span :class="stockStatus.color" class="w-2 h-2 rounded-full"></span>

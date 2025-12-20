@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,40 +17,33 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $products = [
-            // Owoce (Fruits)
-            ['image' => '/images/products/apple.png', 'category' => 'Owoce', 'names' => ['Jabłko Gala', 'Jabłko Szampion', 'Jabłko Ligol']],
-            ['image' => '/images/products/banana.png', 'category' => 'Owoce', 'names' => ['Banany Premium', 'Banany Bio']],
-            ['image' => '/images/products/orange.png', 'category' => 'Owoce', 'names' => ['Pomarańcze Hiszpańskie', 'Pomarańcze Deserowe']],
-            ['image' => '/images/products/lemon.png', 'category' => 'Owoce', 'names' => ['Cytryna Sycylijska', 'Cytryna Bio']],
-            
-            // Warzywa (Vegetables)
-            ['image' => '/images/products/tomato.png', 'category' => 'Warzywa', 'names' => ['Pomidor Malinowy', 'Pomidor Gałązka', 'Pomidor Bawole Serce']],
-            ['image' => '/images/products/cucumber.png', 'category' => 'Warzywa', 'names' => ['Ogórek Gruntowy', 'Ogórek Szklarniowy']],
-            ['image' => '/images/products/potato.png', 'category' => 'Warzywa', 'names' => ['Ziemniaki Młode', 'Ziemniaki Irga']],
-            ['image' => '/images/products/carrot.png', 'category' => 'Warzywa', 'names' => ['Marchew Polska', 'Marchew Myta']],
-            ['image' => '/images/products/onion.png', 'category' => 'Warzywa', 'names' => ['Cebula Żółta', 'Cebula Czerwona']],
-
-            // Mięso (Meat)
-            ['image' => '/images/products/sausage.png', 'category' => 'Mięso', 'names' => ['Kiełbasa Śląska', 'Kiełbasa Podwawelska', 'Kiełbasa Krakowia']],
-            ['image' => '/images/products/chicken.png', 'category' => 'Mięso', 'names' => ['Kurczak Zagrodowy', 'Filet z Kurczaka', 'Udka z Kurczaka']],
-            ['image' => '/images/products/ham.png', 'category' => 'Mięso', 'names' => ['Szynka Wiejska', 'Szynka Konserwowa', 'Szynka Wędzona']],
-
-            // Nabiał (Dairy)
-            ['image' => '/images/products/cheese.png', 'category' => 'Nabiał', 'names' => ['Ser Gouda', 'Ser Edamski', 'Ser Królewski']],
-            ['image' => '/images/products/milk.png', 'category' => 'Nabiał', 'names' => ['Mleko Świeże 3.2%', 'Mleko 2%', 'Mleko Wiejskie']],
-            
-            // Pieczywo (Bakery)
-            ['image' => '/images/products/bread.png', 'category' => 'Pieczywo', 'names' => ['Chleb Razowy', 'Chleb Wiejski', 'Chleb Żytni']],
-            
-            // Napoje (Beverages)
-            ['image' => '/images/products/beer.png', 'category' => 'Napoje', 'names' => ['Piwo Jasne', 'Piwo Lager', 'Piwo Pszeniczne']],
+        $categoryMapping = [
+            'Owoce' => ['apple.png', 'banana.png', 'orange.png', 'lemon.png'],
+            'Warzywa' => ['tomato.png', 'cucumber.png', 'potato.png', 'carrot.png', 'onion.png'],
+            'Mięso' => ['sausage.png', 'chicken.png', 'ham.png'],
+            'Nabiał' => ['cheese.png', 'milk.png'],
+            'Pieczywo' => ['bread.png'],
+            'Napoje' => ['beer.png'],
         ];
 
-        $selected = $this->faker->randomElement($products);
+        $productNames = [
+            'Owoce' => ['Jabłko Gala', 'Jabłko Szampion', 'Banany Premium', 'Pomarańcze Hiszpańskie', 'Cytryna Sycylijska'],
+            'Warzywa' => ['Pomidor Malinowy', 'Pomidor Gałązka', 'Ogórek Gruntowy', 'Ziemniaki Młode', 'Marchew Polska', 'Cebula Żółta'],
+            'Mięso' => ['Kiełbasa Śląska', 'Kurczak Zagrodowy', 'Filet z Kurczaka', 'Szynka Wiejska'],
+            'Nabiał' => ['Ser Gouda', 'Ser Edamski', 'Mleko Świeże 3.2%', 'Mleko 2%'],
+            'Pieczywo' => ['Chleb Razowy', 'Chleb Wiejski', 'Chleb Żytni'],
+            'Napoje' => ['Piwo Jasne', 'Piwo Lager', 'Piwo Pszeniczne'],
+        ];
+
+        $categories = Category::all();
+        $category = $categories->random();
+        $categoryName = $category->name;
+
+        $images = $categoryMapping[$categoryName] ?? ['placeholder.png'];
+        $names = $productNames[$categoryName] ?? ['Produkt'];
 
         return [
-            'name' => $this->faker->randomElement($selected['names']),
+            'name' => $this->faker->randomElement($names),
             'description' => $this->faker->randomElement([
                 'Świeży produkt najwyższej jakości.',
                 'Idealny dodatek do codziennych potraw.',
@@ -57,11 +51,12 @@ class ProductFactory extends Factory
                 'Gwarancja smaku i świeżości.',
                 'Tradycyjna receptura, wyśmienity smak.'
             ]),
-            'image' => $selected['image'],
-            'category' => $selected['category'],
+            'image' => '/images/products/' . $this->faker->randomElement($images),
+            'category_id' => $category->id,
             'price' => $this->faker->randomFloat(2, 1, 30),
             'stock_quantity' => $this->faker->numberBetween(1, 100),
             'minimum_stock' => $this->faker->numberBetween(3, 10),
         ];
     }
 }
+

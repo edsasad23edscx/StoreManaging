@@ -10,8 +10,9 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $products = Product::query()
-            ->when($request->category, function ($query, $category) {
-                return $query->where('category', $category);
+            ->with('category')
+            ->when($request->category_id, function ($query, $categoryId) {
+                return $query->where('category_id', $categoryId);
             })
             ->when($request->search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%");
@@ -27,7 +28,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'category' => 'required|string|max:50',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'minimum_stock' => 'nullable|integer|min:0',
@@ -40,12 +41,12 @@ class ProductController extends Controller
 
         $product = Product::create($validated);
 
-        return response()->json($product, 201);
+        return response()->json($product->load('category'), 201);
     }
 
     public function show(Product $product)
     {
-        return response()->json($product);
+        return response()->json($product->load('category'));
     }
 
     public function update(Request $request, Product $product)
@@ -57,7 +58,7 @@ class ProductController extends Controller
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
                 'description' => 'nullable|string',
-                'category' => 'sometimes|required|string|max:50',
+                'category_id' => 'nullable|integer|exists:categories,id',
                 'price' => 'sometimes|required|numeric|min:0',
                 'stock_quantity' => 'sometimes|required|integer|min:0',
                 'minimum_stock' => 'nullable|integer|min:0',
@@ -71,7 +72,7 @@ class ProductController extends Controller
 
             $product->update($validated);
 
-            return response()->json($product);
+            return response()->json($product->load('category'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {

@@ -13,7 +13,7 @@ class Product extends Model
         'name',
         'description',
         'image',
-        'category',
+        'category_id',
         'price',
         'stock_quantity',
         'minimum_stock',
@@ -24,4 +24,12 @@ class Product extends Model
         'stock_quantity' => 'integer',
         'minimum_stock' => 'integer',
     ];
+
+    /**
+     * Get the category that owns the product.
+     */
+    public function category()
+    {
+        return $this->belongsTo(\App\Models\Category::class, 'category_id');
+    }
 }
