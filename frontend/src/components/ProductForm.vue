@@ -22,9 +22,9 @@ const form = ref({
   name: '',
   description: '',
   category_id: null as number | null,
-  price: '',
-  stock_quantity: '',
-  minimum_stock: '',
+  price: 0,
+  stock_quantity: 0,
+  minimum_stock: 0,
 })
 
 const loadCategories = async () => {
@@ -53,15 +53,22 @@ watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
-      form.value = { ...newVal }
+      form.value = {
+        name: newVal.name || '',
+        description: newVal.description || '',
+        category_id: newVal.category_id ?? null,
+        price: newVal.price ?? 0,
+        stock_quantity: newVal.stock_quantity ?? 0,
+        minimum_stock: newVal.minimum_stock ?? 0,
+      }
     } else {
       form.value = {
         name: '',
         description: '',
         category_id: null,
-        price: '',
-        stock_quantity: '',
-        minimum_stock: '',
+        price: 0,
+        stock_quantity: 0,
+        minimum_stock: 0,
       }
     }
   },
@@ -93,12 +100,13 @@ const handleSubmit = () => {
   const formData = new FormData()
   formData.append('name', form.value.name)
   formData.append('description', form.value.description)
-  if (form.value.category_id !== null) {
-    formData.append('category_id', form.value.category_id.toString())
+  const categoryId = form.value.category_id ?? null
+  if (categoryId !== null) {
+    formData.append('category_id', categoryId.toString())
   }
-  formData.append('price', form.value.price)
-  formData.append('stock_quantity', form.value.stock_quantity)
-  formData.append('minimum_stock', form.value.minimum_stock)
+  formData.append('price', (form.value.price ?? 0).toString())
+  formData.append('stock_quantity', (form.value.stock_quantity ?? 0).toString())
+  formData.append('minimum_stock', (form.value.minimum_stock ?? 0).toString())
 
   if (fileInput.value) {
     formData.append('image', fileInput.value)
@@ -141,10 +149,10 @@ const handleSubmit = () => {
       <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Kategoria</label>
       <div class="flex gap-2">
         <select
-          v-model="form.category_id"
+          v-model.number="form.category_id"
           class="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
         >
-          <option value="">Inne</option>
+          <option :value="null">Inne</option>
           <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
         </select>
         <button
@@ -159,8 +167,23 @@ const handleSubmit = () => {
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <BaseInput id="price" v-model="form.price" label="Cena (PLN)" type="number" step="0.01" />
-      <BaseInput id="stock" v-model="form.stock_quantity" label="Ilość w magazynie" type="number" />
+      <BaseInput
+        id="price"
+        v-model.number="form.price"
+        label="Cena (PLN)"
+        type="number"
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+      />
+      <BaseInput
+        id="stock"
+        v-model.number="form.stock_quantity"
+        label="Ilość w magazynie"
+        type="number"
+        min="0"
+        placeholder="0"
+      />
     </div>
 
     <div class="flex flex-col gap-1.5">
@@ -168,9 +191,10 @@ const handleSubmit = () => {
         >Minimalna ilość w magazynie</label
       >
       <input
-        v-model="form.minimum_stock"
+        v-model.number="form.minimum_stock"
         type="number"
-        placeholder="np. 5"
+        min="0"
+        placeholder="0"
         class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
       />
       <p class="text-xs text-slate-500">
