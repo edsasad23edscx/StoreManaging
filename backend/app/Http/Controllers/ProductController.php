@@ -12,6 +12,9 @@ class ProductController extends Controller
         $products = Product::query()
             ->with('category')
             ->when($request->category_id, function ($query, $categoryId) {
+                if ($categoryId === 'null') {
+                    return $query->whereNull('category_id');
+                }
                 return $query->where('category_id', $categoryId);
             })
             ->when($request->search, function ($query, $search) {

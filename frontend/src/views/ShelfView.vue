@@ -13,12 +13,14 @@ import BaseModal from '@/components/ui/BaseModal.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import ProductForm from '@/components/ProductForm.vue'
 import CategoryManagement from '@/components/CategoryManagement.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import Notification from '@/components/Notification.vue'
 
 const auth = useAuthStore()
 const productStore = useProductStore()
 const router = useRouter()
 const { currentNotification, success, error: showError } = useNotification()
+const confirmDialogRef = ref<any>(null)
 
 const search = ref('')
 const category_id = ref('')
@@ -47,7 +49,11 @@ watch([search, category_id], () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
     const filters: any = { search: search.value }
-    if (category_id.value) {
+    if (category_id.value === 'null') {
+      // Filter by products with no category
+      filters.category_id = 'null'
+    } else if (category_id.value) {
+      // Filter by specific category
       filters.category_id = parseInt(category_id.value)
     }
     productStore.fetchProducts(filters)
@@ -95,7 +101,15 @@ const handleSubmit = async (formData: any) => {
 }
 
 const handleDelete = async (product: any) => {
-  if (confirm('Czy na pewno chcesz usunąć ' + product.name + '?')) {
+  const confirmed = await confirmDialogRef.value?.confirm({
+    title: 'Usunąć produkt?',
+    message: `Czy na pewno chcesz usunąć "${product.name}"? Tej operacji nie można cofnąć.`,
+    confirmText: 'Usuń',
+    cancelText: 'Anuluj',
+    isDangerous: true,
+  })
+
+  if (confirmed) {
     try {
       await productStore.deleteProduct(product.id)
       success('Produkt usunięty')
@@ -145,6 +159,7 @@ const handleCategoryUpdated = async () => {
             class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none"
           >
             <option value="">Wszystkie Kategorie</option>
+            <option value="null">Inne</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
           </select>
           <button
@@ -229,5 +244,8 @@ const handleCategoryUpdated = async () => {
 
     <!-- Notification Toast -->
     <Notification :notification="currentNotification" />
+
+    <!-- Confirm Dialog -->
+    <ConfirmDialog ref="confirmDialogRef" />
   </div>
 </template>

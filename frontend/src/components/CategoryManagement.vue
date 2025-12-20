@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import api from '@/lib/axios'
 import type { Category } from '@/types/product'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const props = defineProps<{
   isOpen: boolean
@@ -13,6 +14,7 @@ const emit = defineEmits(['close', 'updated'])
 
 const categories = ref<Category[]>([])
 const newCategoryName = ref('')
+const confirmDialogRef = ref<any>(null)
 const loading = ref(false)
 const error = ref('')
 
@@ -21,6 +23,15 @@ onMounted(() => {
     loadCategories()
   }
 })
+
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal) {
+      loadCategories()
+    }
+  },
+)
 
 const loadCategories = async () => {
   try {
@@ -58,11 +69,15 @@ const addCategory = async () => {
 }
 
 const deleteCategory = async (categoryId: number, categoryName: string) => {
-  if (
-    !confirm(
-      `Czy na pewno chcesz usunąć kategorię "${categoryName}"? Produkty z tej kategorii zostaną przypisane do "Inne".`,
-    )
-  ) {
+  const confirmed = await confirmDialogRef.value?.confirm({
+    title: 'Usunąć kategorię?',
+    message: `Czy na pewno chcesz usunąć kategorię "${categoryName}"? Produkty z tej kategorii zostaną przypisane do "Inne".`,
+    confirmText: 'Usuń',
+    cancelText: 'Anuluj',
+    isDangerous: true,
+  })
+
+  if (!confirmed) {
     return
   }
 
@@ -171,4 +186,7 @@ const handleClose = () => {
       </div>
     </div>
   </div>
+
+  <!-- Confirm Dialog -->
+  <ConfirmDialog ref="confirmDialogRef" />
 </template>
