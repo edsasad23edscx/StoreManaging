@@ -1,11 +1,17 @@
-import axios from 'axios';
+import axios from 'axios'
+
+const API_CONFIG = {
+  BASE_URL: 'http://localhost:8000/api',
+  WITH_CREDENTIALS: true,
+  HEADERS: {
+    Accept: 'application/json',
+  },
+} as const
 
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api',
-    withCredentials: true,
-    headers: {
-        'Accept': 'application/json',
-    },
-});
+  baseURL: API_CONFIG.BASE_URL,
+  withCredentials: API_CONFIG.WITH_CREDENTIALS,
+  headers: API_CONFIG.HEADERS,
+})
 
-export default api;
+export default api
