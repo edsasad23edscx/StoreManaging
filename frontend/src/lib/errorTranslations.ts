@@ -1,4 +1,4 @@
-const fieldNameMap: Record<string, string> = {
+const FIELD_TRANSLATIONS: Record<string, string> = {
   name: 'Nazwa produktu',
   description: 'Opis',
   price: 'Cena',
@@ -8,9 +8,9 @@ const fieldNameMap: Record<string, string> = {
   image: 'Obraz',
   email: 'Email',
   password: 'Hasło',
-}
+} as const
 
-const errorMessageMap: Record<string, string> = {
+const ERROR_RULE_TRANSLATIONS: Record<string, string> = {
   required: 'jest wymagane',
   numeric: 'musi być liczbą',
   integer: 'musi być liczbą całkowitą',
@@ -20,29 +20,35 @@ const errorMessageMap: Record<string, string> = {
   min: 'jest za małe',
   max: 'jest za duże',
   image: 'musi być obrazem',
+} as const
+
+const cleanLaravelErrorMessage = (error: string): string => {
+  return error
+    .replace(/^The\s+/i, '')
+    .replace(/\s+field\s+is\s+/, ' ')
+}
+
+const translateFieldNames = (message: string): string => {
+  let result = message
+  for (const [field, translation] of Object.entries(FIELD_TRANSLATIONS)) {
+    result = result.replace(new RegExp(`\\b${field}\\b`, 'gi'), translation)
+  }
+  return result
+}
+
+const translateErrorRules = (message: string): string => {
+  let result = message
+  for (const [rule, translation] of Object.entries(ERROR_RULE_TRANSLATIONS)) {
+    result = result.replace(new RegExp(`\\b${rule}\\b`, 'gi'), translation)
+  }
+  return result
 }
 
 export const translateError = (error: string): string => {
-  // Error format from Laravel: "The field_name field is rule_name"
-  let result = error
-
-  // Remove "The" and "field is" wrapper text from Laravel
-  result = result.replace(/^The\s+/i, '')
-  result = result.replace(/\s+field\s+is\s+/, ' ')
-
-  // Capitalize first letter
+  let result = cleanLaravelErrorMessage(error)
   result = result.charAt(0).toUpperCase() + result.slice(1)
-
-  // Try to translate field names
-  for (const [field, polish] of Object.entries(fieldNameMap)) {
-    result = result.replace(new RegExp(`\\b${field}\\b`, 'gi'), polish)
-  }
-
-  // Try to translate common error patterns
-  for (const [rule, polish] of Object.entries(errorMessageMap)) {
-    result = result.replace(new RegExp(`\\b${rule}\\b`, 'gi'), polish)
-  }
-
+  result = translateFieldNames(result)
+  result = translateErrorRules(result)
   return result
 }
 
