@@ -16,6 +16,17 @@ import CategoryManagement from '@/components/CategoryManagement.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import Notification from '@/components/Notification.vue'
 
+const API_ENDPOINTS = {
+  CATEGORIES: '/categories',
+} as const
+
+const CATEGORY_FILTERS = {
+  ALL: '',
+  UNCATEGORIZED: 'null',
+} as const
+
+const SEARCH_DEBOUNCE_MS = 300
+
 const auth = useAuthStore()
 const productStore = useProductStore()
 const router = useRouter()
@@ -31,10 +42,10 @@ const editingProduct = ref<any>(null)
 
 const loadCategories = async () => {
   try {
-    const response = await api.get('/categories')
+    const response = await api.get(API_ENDPOINTS.CATEGORIES)
     categories.value = response.data
   } catch (error) {
-    console.error('Failed to load categories', error)
+    console.error('Failed to load categories:', error)
   }
 }
 
@@ -43,21 +54,24 @@ onMounted(async () => {
   productStore.fetchProducts()
 })
 
+const buildProductFilters = () => {
+  const filters: any = { search: search.value }
+  if (category_id.value === CATEGORY_FILTERS.UNCATEGORIZED) {
+    filters.category_id = CATEGORY_FILTERS.UNCATEGORIZED
+  } else if (category_id.value) {
+    filters.category_id = parseInt(category_id.value)
+  }
+  return filters
+}
+
 // Search Debounce
 let searchTimeout: any
 watch([search, category_id], () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
-    const filters: any = { search: search.value }
-    if (category_id.value === 'null') {
-      // Filter by products with no category
-      filters.category_id = 'null'
-    } else if (category_id.value) {
-      // Filter by specific category
-      filters.category_id = parseInt(category_id.value)
-    }
+    const filters = buildProductFilters()
     productStore.fetchProducts(filters)
-  }, 300)
+  }, SEARCH_DEBOUNCE_MS)
 })
 
 const handleLogout = async () => {
@@ -75,6 +89,18 @@ const openEditModal = (product: any) => {
   showModal.value = true
 }
 
+const handleError = (e: any) => {
+  if (e.response?.data?.errors) {
+    const translatedErrors = translateErrors(e.response.data.errors)
+    const errorList = translatedErrors.map((err) => `• ${err}`).join('\n')
+    showError('Sprawdź poprawność danych:', errorList)
+  } else if (e.response?.data?.message) {
+    showError('Błąd', e.response.data.message)
+  } else {
+    showError('Błąd', 'Nie udało się zapisać produktu')
+  }
+}
+
 const handleSubmit = async (formData: any) => {
   try {
     if (editingProduct.value) {
@@ -86,17 +112,8 @@ const handleSubmit = async (formData: any) => {
     }
     showModal.value = false
   } catch (e: any) {
-    console.error(e)
-
-    if (e.response?.data?.errors) {
-      const translatedErrors = translateErrors(e.response.data.errors)
-      const errorList = translatedErrors.map((err) => `• ${err}`).join('\n')
-      showError('Sprawdź poprawność danych:', errorList)
-    } else if (e.response?.data?.message) {
-      showError('Błąd', e.response.data.message)
-    } else {
-      showError('Błąd', 'Nie udało się zapisać produktu')
-    }
+    console.error('Product submission failed:', e)
+    handleError(e)
   }
 }
 
@@ -109,14 +126,15 @@ const handleDelete = async (product: any) => {
     isDangerous: true,
   })
 
-  if (confirmed) {
-    try {
-      await productStore.deleteProduct(product.id)
-      success('Produkt usunięty')
-    } catch (e: any) {
-      const message = e.response?.data?.message || 'Błąd podczas usuwania produktu'
-      showError(message)
-    }
+  if (!confirmed) return
+
+  try {
+    await productStore.deleteProduct(product.id)
+    success('Produkt usunięty')
+  } catch (e: any) {
+    console.error('Delete failed:', e)
+    const message = e.response?.data?.message || 'Błąd podczas usuwania produktu'
+    showError(message)
   }
 }
 

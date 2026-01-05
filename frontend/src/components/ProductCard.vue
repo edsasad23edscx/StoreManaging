@@ -10,17 +10,31 @@ const emit = defineEmits(['edit', 'delete'])
 
 const API_BASE_URL = 'http://localhost:8000'
 
+const STOCK_STATUSES = {
+  OUT_OF_STOCK: { color: 'bg-red-500', label: 'Brak w magazynie' },
+  LOW_STOCK: { color: 'bg-amber-500', label: 'Niska ilość' },
+  AVAILABLE: { color: 'bg-emerald-500', label: 'Dostępny' },
+} as const
+
+const PRICE_FORMAT = {
+  LOCALE: 'en-US',
+  STYLE: 'currency',
+  CURRENCY: 'USD',
+} as const
+
 const stockStatus = computed(() => {
-  if (props.product.stock_quantity === 0) return { color: 'bg-red-500', label: 'Brak w magazynie' }
-  if (props.product.stock_quantity <= props.product.minimum_stock)
-    return { color: 'bg-amber-500', label: 'Niska ilość' }
-  return { color: 'bg-emerald-500', label: 'Dostępny' }
+  const { stock_quantity, minimum_stock } = props.product
+  
+  if (stock_quantity === 0) return STOCK_STATUSES.OUT_OF_STOCK
+  if (stock_quantity <= minimum_stock) return STOCK_STATUSES.LOW_STOCK
+  return STOCK_STATUSES.AVAILABLE
 })
 
 const priceFormatted = computed(() => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-    props.product.price,
-  )
+  return new Intl.NumberFormat(PRICE_FORMAT.LOCALE, { 
+    style: PRICE_FORMAT.STYLE, 
+    currency: PRICE_FORMAT.CURRENCY 
+  }).format(props.product.price)
 })
 </script>
 
