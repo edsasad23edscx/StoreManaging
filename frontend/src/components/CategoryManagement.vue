@@ -12,6 +12,18 @@ const props = defineProps<{
 
 const emit = defineEmits(['close', 'updated'])
 
+const API_ENDPOINTS = {
+  CATEGORIES: '/categories',
+  CATEGORY_BY_ID: (id: number) => `/categories/${id}`,
+} as const
+
+const ERROR_MESSAGES = {
+  EMPTY_NAME: 'Nazwa kategorii nie może być pusta',
+  LOAD_FAILED: 'Nie udało się załadować kategorii',
+  ADD_FAILED: 'Nie udało się dodać kategorii',
+  DELETE_FAILED: 'Nie udało się usunąć kategorii',
+} as const
+
 const categories = ref<Category[]>([])
 const newCategoryName = ref('')
 const confirmDialogRef = ref<any>(null)
@@ -35,34 +47,39 @@ watch(
 
 const loadCategories = async () => {
   try {
-    const response = await api.get('/categories')
+    const response = await api.get(API_ENDPOINTS.CATEGORIES)
     categories.value = response.data
     error.value = ''
   } catch (e) {
-    console.error('Failed to load categories', e)
-    error.value = 'Nie udało się załadować kategorii'
+    console.error('Failed to load categories:', e)
+    error.value = ERROR_MESSAGES.LOAD_FAILED
   }
 }
 
-const addCategory = async () => {
+const validateCategoryName = (): boolean => {
   if (!newCategoryName.value.trim()) {
-    error.value = 'Nazwa kategorii nie może być pusta'
-    return
+    error.value = ERROR_MESSAGES.EMPTY_NAME
+    return false
   }
+  return true
+}
+
+const addCategory = async () => {
+  if (!validateCategoryName()) return
 
   loading.value = true
   error.value = ''
 
   try {
-    const response = await api.post('/categories', {
+    const response = await api.post(API_ENDPOINTS.CATEGORIES, {
       name: newCategoryName.value,
     })
     categories.value.push(response.data)
     newCategoryName.value = ''
     emit('updated')
   } catch (e: any) {
-    console.error('Failed to add category', e)
-    error.value = e.response?.data?.message || 'Nie udało się dodać kategorii'
+    console.error('Failed to add category:', e)
+    error.value = e.response?.data?.message || ERROR_MESSAGES.ADD_FAILED
   } finally {
     loading.value = false
   }
@@ -77,19 +94,17 @@ const deleteCategory = async (categoryId: number, categoryName: string) => {
     isDangerous: true,
   })
 
-  if (!confirmed) {
-    return
-  }
+  if (!confirmed) return
 
   error.value = ''
 
   try {
-    await api.delete(`/categories/${categoryId}`)
+    await api.delete(API_ENDPOINTS.CATEGORY_BY_ID(categoryId))
     categories.value = categories.value.filter((c) => c.id !== categoryId)
     emit('updated')
   } catch (e: any) {
-    console.error('Failed to delete category', e)
-    error.value = e.response?.data?.message || 'Nie udało się usunąć kategorii'
+    console.error('Failed to delete category:', e)
+    error.value = e.response?.data?.message || ERROR_MESSAGES.DELETE_FAILED
   }
 }
 
