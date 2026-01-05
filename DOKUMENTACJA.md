@@ -140,53 +140,154 @@ StoreManaging/
 
 ---
 
-## Model Danych
+## Specyfikacja Struktury Danych
 
-### Produkt (`products`)
+Poniżej przedstawiono szczegółową specyfikację wszystkich tabel w bazie danych SQLite.
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | INTEGER | Unikalny identyfikator |
-| `name` | VARCHAR(255) | Nazwa produktu |
-| `description` | TEXT (nullable) | Opis produktu |
-| `image` | VARCHAR (nullable) | Ścieżka do zdjęcia |
-| `category_id` | INTEGER (nullable) | Klucz obcy do kategorii |
-| `price` | DECIMAL(10,2) | Cena produktu (PLN) |
-| `stock_quantity` | INTEGER | Aktualna ilość w magazynie |
-| `minimum_stock` | INTEGER (nullable) | Minimalny stan magazynowy |
-| `created_at` | TIMESTAMP | Data utworzenia |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji |
+---
 
-### Kategoria (`categories`)
+### 1. Tabela: `users`
+
+Tabela przechowująca dane uwierzytelniające dla użytkowników systemu (zarządców magazynu).
 
 | Pole | Typ | Opis |
 |------|-----|------|
-| `id` | INTEGER | Unikalny identyfikator |
-| `name` | VARCHAR(50) | Nazwa kategorii |
-| `slug` | VARCHAR | Przyjazny URL |
-| `created_at` | TIMESTAMP | Data utworzenia |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji |
+| `id` | BIGINT, Primary Key | Unikalny identyfikator użytkownika |
+| `name` | VARCHAR(255) | Imię i nazwisko użytkownika |
+| `email` | VARCHAR(255), Unique | Adres e-mail (używany do logowania) |
+| `password` | VARCHAR(255) | Hasło przechowywane w formie zaszyfrowanej (bcrypt) |
+| `email_verified_at` | TIMESTAMP, Nullable | Data weryfikacji adresu e-mail |
+| `remember_token` | VARCHAR(100), Nullable | Token "zapamiętaj mnie" dla sesji |
+| `created_at` | TIMESTAMP | Data utworzenia konta |
+| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
 
-### Użytkownik (`users`)
+---
+
+### 2. Tabela: `admins`
+
+Tabela rezerwowa dla przyszłej implementacji oddzielnych kont administratorów (obecnie nieużywana).
 
 | Pole | Typ | Opis |
 |------|-----|------|
-| `id` | INTEGER | Unikalny identyfikator |
-| `name` | VARCHAR(255) | Imię i nazwisko |
-| `email` | VARCHAR(255) | Adres e-mail (unikalny) |
-| `password` | VARCHAR | Zaszyfrowane hasło |
-| `created_at` | TIMESTAMP | Data utworzenia |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji |
+| `id` | BIGINT, Primary Key | Unikalny identyfikator administratora |
+| `username` | VARCHAR(255), Unique | Nazwa użytkownika / login |
+| `email` | VARCHAR(255), Unique | Adres e-mail |
+| `password_hash` | VARCHAR(255) | Hasło przechowywane w formie zaszyfrowanej |
+| `created_at` | TIMESTAMP | Data utworzenia konta |
+| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
 
-### Relacje
+> [!NOTE]
+> Ta tabela istnieje w schemacie, ale system aktualnie korzysta z tabeli `users` do autoryzacji przez Laravel Sanctum.
+
+---
+
+### 3. Tabela: `categories`
+
+Słownik działów magazynowych (np. Nabiał, Napoje, Pieczywo).
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `id` | BIGINT, Primary Key | Unikalny identyfikator kategorii |
+| `name` | VARCHAR(255) | Nazwa kategorii (np. "Nabiał") |
+| `slug` | VARCHAR(255), Unique | Uproszczona nazwa do adresów URL (np. "nabial") |
+| `created_at` | TIMESTAMP | Data utworzenia kategorii |
+| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+
+---
+
+### 4. Tabela: `products`
+
+Główna tabela asortymentowa przechowująca informacje o produktach w magazynie.
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `id` | BIGINT, Primary Key | Unikalny identyfikator produktu |
+| `name` | VARCHAR(255) | Nazwa produktu (np. "Mleko 3.2%") |
+| `description` | TEXT, Nullable | Szczegółowy opis produktu |
+| `image` | VARCHAR(255), Nullable | Ścieżka do pliku z wizualizacją produktu (np. `/storage/products/mleko.jpg`) |
+| `category_id` | BIGINT, Foreign Key, Nullable | Przypisanie do kategorii (klucz obcy do `categories.id`) |
+| `price` | DECIMAL(10,2) | Cena jednostkowa produktu w PLN |
+| `stock_quantity` | INTEGER | Aktualna ilość towaru w magazynie |
+| `minimum_stock` | INTEGER, Default: 5 | Minimalny stan magazynowy (próg ostrzegawczy) |
+| `created_at` | TIMESTAMP | Data dodania produktu do systemu |
+| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+
+**Klucze obce:**
+- `category_id` → `categories.id` (ON DELETE SET NULL)
+
+---
+
+### 5. Tabela: `sessions`
+
+Tabela przechowująca dane sesji użytkowników (zarządzana automatycznie przez Laravel).
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `id` | VARCHAR(255), Primary Key | Unikalny identyfikator sesji |
+| `user_id` | BIGINT, Foreign Key, Nullable | Identyfikator zalogowanego użytkownika |
+| `ip_address` | VARCHAR(45), Nullable | Adres IP użytkownika |
+| `user_agent` | TEXT, Nullable | Informacje o przeglądarce użytkownika |
+| `payload` | LONGTEXT | Zaszyfrowane dane sesji |
+| `last_activity` | INTEGER, Index | Znacznik czasu ostatniej aktywności (UNIX timestamp) |
+
+---
+
+### 6. Tabela: `personal_access_tokens`
+
+Tabela tokenów dostępu API (Laravel Sanctum) używanych do autoryzacji żądań.
+
+| Pole | Typ | Opis |
+|------|-----|------|
+| `id` | BIGINT, Primary Key | Unikalny identyfikator tokenu |
+| `tokenable_type` | VARCHAR(255) | Typ modelu powiązanego (np. `App\Models\User`) |
+| `tokenable_id` | BIGINT | Identyfikator powiązanego modelu (np. ID użytkownika) |
+| `name` | TEXT | Nazwa tokenu (np. "auth_token") |
+| `token` | VARCHAR(64), Unique | Zaszyfrowany token dostępu |
+| `abilities` | TEXT, Nullable | Uprawnienia tokenu w formacie JSON |
+| `last_used_at` | TIMESTAMP, Nullable | Data ostatniego użycia tokenu |
+| `expires_at` | TIMESTAMP, Nullable | Data wygaśnięcia tokenu |
+| `created_at` | TIMESTAMP | Data utworzenia tokenu |
+| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+
+---
+
+### Diagram Relacji (ERD)
 
 ```
-┌─────────────┐       ┌─────────────┐
-│  Category   │───1:N─│   Product   │
-└─────────────┘       └─────────────┘
+┌─────────────────┐
+│     users       │
+│─────────────────│
+│ id (PK)         │
+│ name            │
+│ email           │
+│ password        │
+└────────┬────────┘
+         │
+         │ 1:N (przez personal_access_tokens)
+         ▼
+┌─────────────────────────┐
+│  personal_access_tokens │
+│─────────────────────────│
+│ id (PK)                 │
+│ tokenable_id (FK)       │
+│ token                   │
+└─────────────────────────┘
+
+┌─────────────────┐         ┌─────────────────┐
+│   categories    │         │    products     │
+│─────────────────│         │─────────────────│
+│ id (PK)         │◄───────┤│ id (PK)         │
+│ name            │   1:N   │ name            │
+│ slug            │         │ category_id (FK)│
+└─────────────────┘         │ price           │
+                            │ stock_quantity  │
+                            │ minimum_stock   │
+                            └─────────────────┘
 ```
 
-Jedna kategoria może zawierać wiele produktów. Produkt może nie mieć przypisanej kategorii (kategoria "Inne").
+**Opis relacji:**
+- **users ↔ personal_access_tokens**: Jeden użytkownik może posiadać wiele tokenów dostępu (relacja 1:N przez polimorfizm)
+- **categories ↔ products**: Jedna kategoria może zawierać wiele produktów (relacja 1:N). Produkt może nie mieć przypisanej kategorii (`category_id = NULL`), co oznacza kategorię "Inne"
 
 ---
 
