@@ -14,9 +14,16 @@ const props = defineProps<{
 const emit = defineEmits(['submit'])
 
 const API_BASE_URL = 'http://localhost:8000'
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+const API_ENDPOINTS = {
+  CATEGORIES: '/categories',
+} as const
+
 const categories = ref<Category[]>([])
 const showCategoryManagement = ref(false)
 const fileError = ref('')
+const fileInput = ref<File | null>(null)
+const previewUrl = ref<string | null>(null)
 
 const form = ref({
   name: '',
@@ -29,10 +36,10 @@ const form = ref({
 
 const loadCategories = async () => {
   try {
-    const response = await api.get('/categories')
+    const response = await api.get(API_ENDPOINTS.CATEGORIES)
     categories.value = response.data
   } catch (error) {
-    console.error('Failed to load categories', error)
+    console.error('Failed to load categories:', error)
   }
 }
 
@@ -75,19 +82,24 @@ watch(
   { immediate: true },
 )
 
-const fileInput = ref<File | null>(null)
-const previewUrl = ref<string | null>(null)
+const validateFileSize = (file: File): boolean => {
+  if (file.size > MAX_FILE_SIZE) {
+    fileError.value = 'Plik jest zbyt duży. Maksymalny rozmiar to 2MB.'
+    return false
+  }
+  return true
+}
 
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   fileError.value = ''
+  fileInput.value = null
+  previewUrl.value = null
+
   if (target.files && target.files[0]) {
     const file = target.files[0]
-    if (file.size > 2 * 1024 * 1024) {
-      fileError.value = 'Plik jest zbyt duży. Maksymalny rozmiar to 2MB.'
-      target.value = '' // Reset input
-      fileInput.value = null
-      previewUrl.value = null
+    if (!validateFileSize(file)) {
+      target.value = ''
       return
     }
     fileInput.value = file
@@ -95,15 +107,16 @@ const handleFileUpload = (event: Event) => {
   }
 }
 
-const handleSubmit = () => {
-  fileError.value = ''
+const buildFormData = (): FormData => {
   const formData = new FormData()
   formData.append('name', form.value.name)
   formData.append('description', form.value.description)
-  const categoryId = form.value.category_id ?? null
+  
+  const categoryId = form.value.category_id
   if (categoryId !== null) {
     formData.append('category_id', categoryId.toString())
   }
+  
   formData.append('price', (form.value.price ?? 0).toString())
   formData.append('stock_quantity', (form.value.stock_quantity ?? 0).toString())
   formData.append('minimum_stock', (form.value.minimum_stock ?? 0).toString())
@@ -112,6 +125,12 @@ const handleSubmit = () => {
     formData.append('image', fileInput.value)
   }
 
+  return formData
+}
+
+const handleSubmit = () => {
+  fileError.value = ''
+  const formData = buildFormData()
   emit('submit', formData)
 }
 </script>
