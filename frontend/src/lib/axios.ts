@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const API_CONFIG = {
-  BASE_URL: 'http://localhost:8000/api',
+  BASE_URL: '/api',
   WITH_CREDENTIALS: true,
   HEADERS: {
     Accept: 'application/json',

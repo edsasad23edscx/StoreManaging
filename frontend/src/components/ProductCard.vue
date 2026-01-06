@@ -8,7 +8,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['edit', 'delete'])
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = '/api'
 
 const STOCK_STATUSES = {
   OUT_OF_STOCK: { color: 'bg-red-500', label: 'Brak w magazynie' },
@@ -24,16 +24,16 @@ const PRICE_FORMAT = {
 
 const stockStatus = computed(() => {
   const { stock_quantity, minimum_stock } = props.product
-  
+
   if (stock_quantity === 0) return STOCK_STATUSES.OUT_OF_STOCK
   if (stock_quantity <= minimum_stock) return STOCK_STATUSES.LOW_STOCK
   return STOCK_STATUSES.AVAILABLE
 })
 
 const priceFormatted = computed(() => {
-  return new Intl.NumberFormat(PRICE_FORMAT.LOCALE, { 
-    style: PRICE_FORMAT.STYLE, 
-    currency: PRICE_FORMAT.CURRENCY 
+  return new Intl.NumberFormat(PRICE_FORMAT.LOCALE, {
+    style: PRICE_FORMAT.STYLE,
+    currency: PRICE_FORMAT.CURRENCY,
   }).format(props.product.price)
 })
 </script>

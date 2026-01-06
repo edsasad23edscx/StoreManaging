@@ -13,7 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['submit'])
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = '/api'
 const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
 const API_ENDPOINTS = {
   CATEGORIES: '/categories',
@@ -111,12 +111,12 @@ const buildFormData = (): FormData => {
   const formData = new FormData()
   formData.append('name', form.value.name)
   formData.append('description', form.value.description)
-  
+
   const categoryId = form.value.category_id
   if (categoryId !== null) {
     formData.append('category_id', categoryId.toString())
   }
-  
+
   formData.append('price', (form.value.price ?? 0).toString())
   formData.append('stock_quantity', (form.value.stock_quantity ?? 0).toString())
   formData.append('minimum_stock', (form.value.minimum_stock ?? 0).toString())
