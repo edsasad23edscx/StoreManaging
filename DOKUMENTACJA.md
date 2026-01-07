@@ -1,6 +1,7 @@
 # Wirtualna Półka - Dokumentacja Projektu
 
 ## Spis Treści
+
 1. [Opis Projektu](#opis-projektu)
 2. [Architektura Systemu](#architektura-systemu)
 3. [Technologie](#technologie)
@@ -38,6 +39,7 @@ System oparty jest na architekturze **SPA (Single Page Application)** z rozdziel
 ```
 
 ### Warstwy aplikacji:
+
 - **Prezentacji (Frontend)**: Vue 3, Pinia, Tailwind CSS
 - **Logiki biznesowej (Backend)**: Laravel 12, Sanctum (autoryzacja)
 - **Danych (Database)**: SQLite
@@ -47,21 +49,23 @@ System oparty jest na architekturze **SPA (Single Page Application)** z rozdziel
 ## Technologie
 
 ### Backend
-| Technologia | Wersja | Zastosowanie |
-|-------------|--------|--------------|
-| PHP | 8.2+ | Język programowania |
-| Laravel | 12.x | Framework webowy |
-| Sanctum | - | Autoryzacja tokenowa API |
-| SQLite | 3.x | Baza danych (lekka, plikowa) |
+
+| Technologia | Wersja | Zastosowanie                 |
+| ----------- | ------ | ---------------------------- |
+| PHP         | 8.2+   | Język programowania          |
+| Laravel     | 12.x   | Framework webowy             |
+| Sanctum     | -      | Autoryzacja tokenowa API     |
+| SQLite      | 3.x    | Baza danych (lekka, plikowa) |
 
 ### Frontend
-| Technologia | Wersja | Zastosowanie |
-|-------------|--------|--------------|
-| Vue.js | 3.x | Framework UI (Composition API) |
-| Pinia | - | Zarządzanie stanem aplikacji |
-| Tailwind CSS | 4.x | Stylowanie komponentów |
-| Axios | - | Komunikacja HTTP z API |
-| Vue Router | - | Routing po stronie klienta |
+
+| Technologia  | Wersja | Zastosowanie                   |
+| ------------ | ------ | ------------------------------ |
+| Vue.js       | 3.x    | Framework UI (Composition API) |
+| Pinia        | -      | Zarządzanie stanem aplikacji   |
+| Tailwind CSS | 4.x    | Stylowanie komponentów         |
+| Axios        | -      | Komunikacja HTTP z API         |
+| Vue Router   | -      | Routing po stronie klienta     |
 
 ---
 
@@ -111,32 +115,32 @@ StoreManaging/
 
 ### Autoryzacja
 
-| Metoda | Endpoint | Opis | Autoryzacja |
-|--------|----------|------|-------------|
-| `POST` | `/api/login` | Logowanie użytkownika | ❌ Publiczny |
-| `POST` | `/api/logout` | Wylogowanie użytkownika | ✅ Wymagana |
-| `GET` | `/api/user` | Pobranie danych zalogowanego użytkownika | ✅ Wymagana |
+| Metoda | Endpoint      | Opis                                     | Autoryzacja  |
+| ------ | ------------- | ---------------------------------------- | ------------ |
+| `POST` | `/api/login`  | Logowanie użytkownika                    | ❌ Publiczny |
+| `POST` | `/api/logout` | Wylogowanie użytkownika                  | ✅ Wymagana  |
+| `GET`  | `/api/user`   | Pobranie danych zalogowanego użytkownika | ✅ Wymagana  |
 
 ### Produkty
 
-| Metoda | Endpoint | Opis | Autoryzacja |
-|--------|----------|------|-------------|
-| `GET` | `/api/products` | Lista wszystkich produktów | ✅ Wymagana |
-| `GET` | `/api/products?category_id={id}` | Filtrowanie po kategorii | ✅ Wymagana |
-| `GET` | `/api/products?search={query}` | Wyszukiwanie produktów | ✅ Wymagana |
-| `POST` | `/api/products` | Dodanie nowego produktu | ✅ Wymagana |
-| `GET` | `/api/products/{id}` | Szczegóły produktu | ✅ Wymagana |
-| `PUT/PATCH` | `/api/products/{id}` | Aktualizacja produktu | ✅ Wymagana |
-| `DELETE` | `/api/products/{id}` | Usunięcie produktu | ✅ Wymagana |
+| Metoda      | Endpoint                         | Opis                       | Autoryzacja |
+| ----------- | -------------------------------- | -------------------------- | ----------- |
+| `GET`       | `/api/products`                  | Lista wszystkich produktów | ✅ Wymagana |
+| `GET`       | `/api/products?category_id={id}` | Filtrowanie po kategorii   | ✅ Wymagana |
+| `GET`       | `/api/products?search={query}`   | Wyszukiwanie produktów     | ✅ Wymagana |
+| `POST`      | `/api/products`                  | Dodanie nowego produktu    | ✅ Wymagana |
+| `GET`       | `/api/products/{id}`             | Szczegóły produktu         | ✅ Wymagana |
+| `PUT/PATCH` | `/api/products/{id}`             | Aktualizacja produktu      | ✅ Wymagana |
+| `DELETE`    | `/api/products/{id}`             | Usunięcie produktu         | ✅ Wymagana |
 
 ### Kategorie
 
-| Metoda | Endpoint | Opis | Autoryzacja |
-|--------|----------|------|-------------|
-| `GET` | `/api/categories` | Lista wszystkich kategorii | ❌ Publiczny |
-| `GET` | `/api/categories/{id}` | Szczegóły kategorii | ❌ Publiczny |
-| `POST` | `/api/categories` | Dodanie nowej kategorii | ✅ Wymagana |
-| `DELETE` | `/api/categories/{id}` | Usunięcie kategorii | ✅ Wymagana |
+| Metoda   | Endpoint               | Opis                       | Autoryzacja  |
+| -------- | ---------------------- | -------------------------- | ------------ |
+| `GET`    | `/api/categories`      | Lista wszystkich kategorii | ❌ Publiczny |
+| `GET`    | `/api/categories/{id}` | Szczegóły kategorii        | ❌ Publiczny |
+| `POST`   | `/api/categories`      | Dodanie nowej kategorii    | ✅ Wymagana  |
+| `DELETE` | `/api/categories/{id}` | Usunięcie kategorii        | ✅ Wymagana  |
 
 ---
 
@@ -150,16 +154,16 @@ Poniżej przedstawiono szczegółową specyfikację wszystkich tabel w bazie dan
 
 Tabela przechowująca dane uwierzytelniające dla użytkowników systemu (zarządców magazynu).
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | BIGINT, Primary Key | Unikalny identyfikator użytkownika |
-| `name` | VARCHAR(255) | Imię i nazwisko użytkownika |
-| `email` | VARCHAR(255), Unique | Adres e-mail (używany do logowania) |
-| `password` | VARCHAR(255) | Hasło przechowywane w formie zaszyfrowanej (bcrypt) |
-| `email_verified_at` | TIMESTAMP, Nullable | Data weryfikacji adresu e-mail |
-| `remember_token` | VARCHAR(100), Nullable | Token "zapamiętaj mnie" dla sesji |
-| `created_at` | TIMESTAMP | Data utworzenia konta |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+| Pole                | Typ                    | Opis                                                |
+| ------------------- | ---------------------- | --------------------------------------------------- |
+| `id`                | BIGINT, Primary Key    | Unikalny identyfikator użytkownika                  |
+| `name`              | VARCHAR(255)           | Imię i nazwisko użytkownika                         |
+| `email`             | VARCHAR(255), Unique   | Adres e-mail (używany do logowania)                 |
+| `password`          | VARCHAR(255)           | Hasło przechowywane w formie zaszyfrowanej (bcrypt) |
+| `email_verified_at` | TIMESTAMP, Nullable    | Data weryfikacji adresu e-mail                      |
+| `remember_token`    | VARCHAR(100), Nullable | Token "zapamiętaj mnie" dla sesji                   |
+| `created_at`        | TIMESTAMP              | Data utworzenia konta                               |
+| `updated_at`        | TIMESTAMP              | Data ostatniej modyfikacji rekordu                  |
 
 ---
 
@@ -167,14 +171,14 @@ Tabela przechowująca dane uwierzytelniające dla użytkowników systemu (zarzą
 
 Tabela rezerwowa dla przyszłej implementacji oddzielnych kont administratorów (obecnie nieużywana).
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | BIGINT, Primary Key | Unikalny identyfikator administratora |
-| `username` | VARCHAR(255), Unique | Nazwa użytkownika / login |
-| `email` | VARCHAR(255), Unique | Adres e-mail |
-| `password_hash` | VARCHAR(255) | Hasło przechowywane w formie zaszyfrowanej |
-| `created_at` | TIMESTAMP | Data utworzenia konta |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+| Pole            | Typ                  | Opis                                       |
+| --------------- | -------------------- | ------------------------------------------ |
+| `id`            | BIGINT, Primary Key  | Unikalny identyfikator administratora      |
+| `username`      | VARCHAR(255), Unique | Nazwa użytkownika / login                  |
+| `email`         | VARCHAR(255), Unique | Adres e-mail                               |
+| `password_hash` | VARCHAR(255)         | Hasło przechowywane w formie zaszyfrowanej |
+| `created_at`    | TIMESTAMP            | Data utworzenia konta                      |
+| `updated_at`    | TIMESTAMP            | Data ostatniej modyfikacji rekordu         |
 
 > [!NOTE]
 > Ta tabela istnieje w schemacie, ale system aktualnie korzysta z tabeli `users` do autoryzacji przez Laravel Sanctum.
@@ -185,13 +189,13 @@ Tabela rezerwowa dla przyszłej implementacji oddzielnych kont administratorów 
 
 Słownik działów magazynowych (np. Nabiał, Napoje, Pieczywo).
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | BIGINT, Primary Key | Unikalny identyfikator kategorii |
-| `name` | VARCHAR(255) | Nazwa kategorii (np. "Nabiał") |
-| `slug` | VARCHAR(255), Unique | Uproszczona nazwa do adresów URL (np. "nabial") |
-| `created_at` | TIMESTAMP | Data utworzenia kategorii |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+| Pole         | Typ                  | Opis                                            |
+| ------------ | -------------------- | ----------------------------------------------- |
+| `id`         | BIGINT, Primary Key  | Unikalny identyfikator kategorii                |
+| `name`       | VARCHAR(255)         | Nazwa kategorii (np. "Nabiał")                  |
+| `slug`       | VARCHAR(255), Unique | Uproszczona nazwa do adresów URL (np. "nabial") |
+| `created_at` | TIMESTAMP            | Data utworzenia kategorii                       |
+| `updated_at` | TIMESTAMP            | Data ostatniej modyfikacji rekordu              |
 
 ---
 
@@ -199,20 +203,21 @@ Słownik działów magazynowych (np. Nabiał, Napoje, Pieczywo).
 
 Główna tabela asortymentowa przechowująca informacje o produktach w magazynie.
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | BIGINT, Primary Key | Unikalny identyfikator produktu |
-| `name` | VARCHAR(255) | Nazwa produktu (np. "Mleko 3.2%") |
-| `description` | TEXT, Nullable | Szczegółowy opis produktu |
-| `image` | VARCHAR(255), Nullable | Ścieżka do pliku z wizualizacją produktu (np. `/storage/products/mleko.jpg`) |
-| `category_id` | BIGINT, Foreign Key, Nullable | Przypisanie do kategorii (klucz obcy do `categories.id`) |
-| `price` | DECIMAL(10,2) | Cena jednostkowa produktu w PLN |
-| `stock_quantity` | INTEGER | Aktualna ilość towaru w magazynie |
-| `minimum_stock` | INTEGER, Default: 5 | Minimalny stan magazynowy (próg ostrzegawczy) |
-| `created_at` | TIMESTAMP | Data dodania produktu do systemu |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+| Pole             | Typ                           | Opis                                                                         |
+| ---------------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| `id`             | BIGINT, Primary Key           | Unikalny identyfikator produktu                                              |
+| `name`           | VARCHAR(255)                  | Nazwa produktu (np. "Mleko 3.2%")                                            |
+| `description`    | TEXT, Nullable                | Szczegółowy opis produktu                                                    |
+| `image`          | VARCHAR(255), Nullable        | Ścieżka do pliku z wizualizacją produktu (np. `/storage/products/mleko.jpg`) |
+| `category_id`    | BIGINT, Foreign Key, Nullable | Przypisanie do kategorii (klucz obcy do `categories.id`)                     |
+| `price`          | DECIMAL(10,2)                 | Cena jednostkowa produktu w PLN                                              |
+| `stock_quantity` | INTEGER                       | Aktualna ilość towaru w magazynie                                            |
+| `minimum_stock`  | INTEGER, Default: 5           | Minimalny stan magazynowy (próg ostrzegawczy)                                |
+| `created_at`     | TIMESTAMP                     | Data dodania produktu do systemu                                             |
+| `updated_at`     | TIMESTAMP                     | Data ostatniej modyfikacji rekordu                                           |
 
 **Klucze obce:**
+
 - `category_id` → `categories.id` (ON DELETE SET NULL)
 
 ---
@@ -221,14 +226,14 @@ Główna tabela asortymentowa przechowująca informacje o produktach w magazynie
 
 Tabela przechowująca dane sesji użytkowników (zarządzana automatycznie przez Laravel).
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | VARCHAR(255), Primary Key | Unikalny identyfikator sesji |
-| `user_id` | BIGINT, Foreign Key, Nullable | Identyfikator zalogowanego użytkownika |
-| `ip_address` | VARCHAR(45), Nullable | Adres IP użytkownika |
-| `user_agent` | TEXT, Nullable | Informacje o przeglądarce użytkownika |
-| `payload` | LONGTEXT | Zaszyfrowane dane sesji |
-| `last_activity` | INTEGER, Index | Znacznik czasu ostatniej aktywności (UNIX timestamp) |
+| Pole            | Typ                           | Opis                                                 |
+| --------------- | ----------------------------- | ---------------------------------------------------- |
+| `id`            | VARCHAR(255), Primary Key     | Unikalny identyfikator sesji                         |
+| `user_id`       | BIGINT, Foreign Key, Nullable | Identyfikator zalogowanego użytkownika               |
+| `ip_address`    | VARCHAR(45), Nullable         | Adres IP użytkownika                                 |
+| `user_agent`    | TEXT, Nullable                | Informacje o przeglądarce użytkownika                |
+| `payload`       | LONGTEXT                      | Zaszyfrowane dane sesji                              |
+| `last_activity` | INTEGER, Index                | Znacznik czasu ostatniej aktywności (UNIX timestamp) |
 
 ---
 
@@ -236,18 +241,18 @@ Tabela przechowująca dane sesji użytkowników (zarządzana automatycznie przez
 
 Tabela tokenów dostępu API (Laravel Sanctum) używanych do autoryzacji żądań.
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `id` | BIGINT, Primary Key | Unikalny identyfikator tokenu |
-| `tokenable_type` | VARCHAR(255) | Typ modelu powiązanego (np. `App\Models\User`) |
-| `tokenable_id` | BIGINT | Identyfikator powiązanego modelu (np. ID użytkownika) |
-| `name` | TEXT | Nazwa tokenu (np. "auth_token") |
-| `token` | VARCHAR(64), Unique | Zaszyfrowany token dostępu |
-| `abilities` | TEXT, Nullable | Uprawnienia tokenu w formacie JSON |
-| `last_used_at` | TIMESTAMP, Nullable | Data ostatniego użycia tokenu |
-| `expires_at` | TIMESTAMP, Nullable | Data wygaśnięcia tokenu |
-| `created_at` | TIMESTAMP | Data utworzenia tokenu |
-| `updated_at` | TIMESTAMP | Data ostatniej modyfikacji rekordu |
+| Pole             | Typ                 | Opis                                                  |
+| ---------------- | ------------------- | ----------------------------------------------------- |
+| `id`             | BIGINT, Primary Key | Unikalny identyfikator tokenu                         |
+| `tokenable_type` | VARCHAR(255)        | Typ modelu powiązanego (np. `App\Models\User`)        |
+| `tokenable_id`   | BIGINT              | Identyfikator powiązanego modelu (np. ID użytkownika) |
+| `name`           | TEXT                | Nazwa tokenu (np. "auth_token")                       |
+| `token`          | VARCHAR(64), Unique | Zaszyfrowany token dostępu                            |
+| `abilities`      | TEXT, Nullable      | Uprawnienia tokenu w formacie JSON                    |
+| `last_used_at`   | TIMESTAMP, Nullable | Data ostatniego użycia tokenu                         |
+| `expires_at`     | TIMESTAMP, Nullable | Data wygaśnięcia tokenu                               |
+| `created_at`     | TIMESTAMP           | Data utworzenia tokenu                                |
+| `updated_at`     | TIMESTAMP           | Data ostatniej modyfikacji rekordu                    |
 
 ---
 
@@ -286,6 +291,7 @@ Tabela tokenów dostępu API (Laravel Sanctum) używanych do autoryzacji żąda�
 ```
 
 **Opis relacji:**
+
 - **users ↔ personal_access_tokens**: Jeden użytkownik może posiadać wiele tokenów dostępu (relacja 1:N przez polimorfizm)
 - **categories ↔ products**: Jedna kategoria może zawierać wiele produktów (relacja 1:N). Produkt może nie mieć przypisanej kategorii (`category_id = NULL`), co oznacza kategorię "Inne"
 
@@ -347,15 +353,26 @@ Aplikacja będzie dostępna pod adresem: `http://localhost:5173`
 
 ---
 
+### Docker
+
+```bash
+# 1. W głównym katalogu uruchom
+docker-compose up --build
+```
+
+Aplikacja będzie dostępna pod adresem `http://localhost:8050`
+
+---
+
 ## Dane Logowania
 
 > [!IMPORTANT]
 > Poniższe dane są ustawiane automatycznie przez seeder bazy danych.
 
-| Pole | Wartość |
-|------|---------|
+| Pole       | Wartość          |
+| ---------- | ---------------- |
 | **E-mail** | `admin@spoko.pl` |
-| **Hasło** | `admin` |
+| **Hasło**  | `admin`          |
 
 ### Tworzenie nowego użytkownika (opcjonalnie)
 
@@ -386,6 +403,7 @@ Poniżej znajdują się diagramy przepływu ilustrujące główne procesy w syst
 ![Diagramy przepływu - szczegóły](docs/diagramy_large.png)
 
 Diagramy przedstawiają następujące procesy:
+
 1. **Usuwanie produktu** - przepływ usuwania produktu z potwierdzeniem
 2. **Edycja produktu** - walidacja i aktualizacja danych produktu
 3. **Dodawanie produktu** - tworzenie nowego produktu z walidacją
@@ -400,4 +418,4 @@ Ten projekt jest udostępniony do celów edukacyjnych.
 
 ---
 
-*Ostatnia aktualizacja: Styczeń 2026*
+_Ostatnia aktualizacja: Styczeń 2026_
