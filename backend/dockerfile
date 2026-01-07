@@ -23,6 +23,9 @@ EXPOSE 9000
 
 CMD sh -c "composer install && \
            chmod -R 777 storage bootstrap/cache && \
+           chmod -R 777 database && \
+           touch database/database.sqlite && \
+           chmod 666 database/database.sqlite && \
            chmod -R 755 public && \
            mkdir -p storage/app/public && \
            rm -f public/storage && \
