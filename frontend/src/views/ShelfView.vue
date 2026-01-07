@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useProductStore } from '@/stores/product'
 import { useRouter } from 'vue-router'
 import { useNotification } from '@/composables/useNotification'
+import { useTheme } from '@/composables/useTheme'
 import { translateErrors } from '@/lib/errorTranslations'
 import ProductCard from '@/components/ProductCard.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -15,6 +16,10 @@ import ProductForm from '@/components/ProductForm.vue'
 import CategoryManagement from '@/components/CategoryManagement.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import Notification from '@/components/Notification.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+
+// Initialize theme
+useTheme()
 
 const API_ENDPOINTS = {
   CATEGORIES: '/categories',
@@ -193,6 +198,7 @@ const handleCategoryUpdated = async () => {
           <span class="hidden md:block text-sm text-slate-500 dark:text-slate-400 font-medium">{{
             auth.user?.name
           }}</span>
+          <ThemeToggle />
           <BaseButton variant="secondary" @click="handleLogout" class="!py-2 !px-3 text-sm"
             >Wyloguj</BaseButton
           >

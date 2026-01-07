@@ -4,6 +4,11 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+import { useTheme } from '@/composables/useTheme'
+
+// Initialize theme
+useTheme()
 
 const email = ref('')
 const password = ref('')
@@ -28,19 +33,24 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden">
+  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 relative overflow-hidden transition-colors">
+    <!-- Theme Toggle -->
+    <div class="absolute top-4 right-4 z-20">
+      <ThemeToggle />
+    </div>
+
     <!-- Login Card -->
     <div
-      class="relative z-10 w-full max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-100"
+      class="relative z-10 w-full max-w-md p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700"
     >
       <div class="mb-8 text-center">
         <div
-          class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white font-bold text-xl mb-4 shadow-lg shadow-indigo-200"
+          class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600 text-white font-bold text-xl mb-4 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50"
         >
           W
         </div>
-        <h1 class="text-2xl font-bold text-slate-900 mb-1">Wirtualna Półka</h1>
-        <p class="text-slate-500 text-sm">System Zarządzania Magazynem</p>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white mb-1">Wirtualna Półka</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">System Zarządzania Magazynem</p>
       </div>
 
       <form @submit.prevent="handleLogin" class="space-y-5">
@@ -62,7 +72,7 @@ const handleLogin = async () => {
 
         <div
           v-if="error"
-          class="text-red-600 text-sm text-center bg-red-50 p-3 rounded-lg border border-red-100"
+          class="text-red-600 dark:text-red-400 text-sm text-center bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-800"
         >
           {{ error }}
         </div>

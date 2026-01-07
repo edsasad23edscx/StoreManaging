@@ -143,7 +143,7 @@ const handleSubmit = () => {
       <div class="flex items-center gap-4">
         <div
           v-if="imageUrl"
-          class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200"
+          class="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
         >
           <img :src="imageUrl" class="w-full h-full object-cover" />
         </div>
@@ -151,7 +151,7 @@ const handleSubmit = () => {
           type="file"
           @change="handleFileUpload"
           accept="image/*"
-          class="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          class="text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50 file:cursor-pointer file:transition-colors"
         />
       </div>
       <p v-if="fileError" class="text-red-600 dark:text-red-400 text-sm">{{ fileError }}</p>
@@ -216,7 +216,7 @@ const handleSubmit = () => {
         placeholder="0"
         class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
       />
-      <p class="text-xs text-slate-500">
+      <p class="text-xs text-slate-500 dark:text-slate-400">
         Będzie wyświetlany alert gdy ilość spadnie poniżej tej wartości
       </p>
     </div>
