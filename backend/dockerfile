@@ -11,7 +11,8 @@ WORKDIR /var/www
 COPY . .
 
 RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 755 storage bootstrap/cache \
+    && chmod -R 755 public
 
 RUN composer install --no-dev --optimize-autoloader
 
@@ -21,9 +22,12 @@ RUN cp .env.example .env || true \
 EXPOSE 9000
 
 CMD sh -c "composer install && \
-           chmod -R 777 storage bootstrap/cache public && \
-           rm -rf public/storage && \
+           chmod -R 777 storage bootstrap/cache && \
+           chmod -R 755 public && \
+           mkdir -p storage/app/public && \
+           rm -f public/storage && \
            php artisan storage:link && \
+           chmod -R 777 public/storage storage/app/public && \
            php artisan migrate --force && \
            (php artisan db:seed --force || true) && \
            php-fpm"
