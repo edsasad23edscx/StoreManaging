@@ -10,6 +10,7 @@ interface ProductFilters {
 
 interface ProductFormData {
   name: string
+  barcode?: string
   description?: string
   category_id?: number | null
   price: number

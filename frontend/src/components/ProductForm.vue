@@ -27,6 +27,7 @@ const previewUrl = ref<string | null>(null)
 
 const form = ref({
   name: '',
+  barcode: '',
   description: '',
   category_id: null as number | null,
   price: 0,
@@ -62,6 +63,7 @@ watch(
     if (newVal) {
       form.value = {
         name: newVal.name || '',
+        barcode: newVal.barcode || '',
         description: newVal.description || '',
         category_id: newVal.category_id ?? null,
         price: newVal.price ?? 0,
@@ -71,6 +73,7 @@ watch(
     } else {
       form.value = {
         name: '',
+        barcode: '',
         description: '',
         category_id: null,
         price: 0,
@@ -110,6 +113,7 @@ const handleFileUpload = (event: Event) => {
 const buildFormData = (): FormData => {
   const formData = new FormData()
   formData.append('name', form.value.name)
+  formData.append('barcode', form.value.barcode)
   formData.append('description', form.value.description)
 
   const categoryId = form.value.category_id
@@ -162,6 +166,13 @@ const handleSubmit = () => {
       v-model="form.name"
       label="Nazwa Produktu"
       placeholder="np. Chleb Wiejski"
+    />
+
+    <BaseInput
+      id="barcode"
+      v-model="form.barcode"
+      label="Kod Kreskowy"
+      placeholder="np. 5901234567890"
     />
 
     <div class="flex flex-col gap-1.5">

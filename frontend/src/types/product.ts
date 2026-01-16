@@ -9,6 +9,7 @@ export interface Category {
 export interface Product {
   id: number
   name: string
+  barcode?: string
   description: string
   category_id: number
   category?: Category

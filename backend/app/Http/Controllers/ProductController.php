@@ -30,11 +30,14 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'barcode' => 'nullable|string|max:255|unique:products,barcode',
             'description' => 'nullable|string',
             'category_id' => 'nullable|integer|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'minimum_stock' => 'nullable|integer|min:0',
+        ], [
+            'barcode.unique' => 'Produkt z takim kodem kreskowym już istnieje.',
         ]);
 
         if ($request->hasFile('image')) {
@@ -60,12 +63,15 @@ class ProductController extends Controller
             
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
+                'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $product->id,
                 'description' => 'nullable|string',
                 'category_id' => 'nullable|integer|exists:categories,id',
                 'price' => 'sometimes|required|numeric|min:0',
                 'stock_quantity' => 'sometimes|required|integer|min:0',
                 'minimum_stock' => 'nullable|integer|min:0',
                 'image' => 'nullable|image|max:2048',
+            ], [
+                'barcode.unique' => 'Produkt z takim kodem kreskowym już istnieje.',
             ]);
 
             if ($request->hasFile('image')) {
