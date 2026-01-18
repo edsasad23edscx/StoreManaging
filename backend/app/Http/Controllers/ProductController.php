@@ -28,6 +28,13 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->has('category_id')) {
+            $categoryId = $request->input('category_id');
+            if ($categoryId === '' || $categoryId === 'null') {
+                $request->merge(['category_id' => null]);
+            }
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'barcode' => 'nullable|string|max:255|unique:products,barcode',
@@ -60,6 +67,13 @@ class ProductController extends Controller
         try {
             \Illuminate\Support\Facades\Log::info('Update Request Data:', $request->all());
             \Illuminate\Support\Facades\Log::info('Update Request Files:', $request->allFiles());
+
+            if ($request->has('category_id')) {
+                $categoryId = $request->input('category_id');
+                if ($categoryId === '' || $categoryId === 'null') {
+                    $request->merge(['category_id' => null]);
+                }
+            }
             
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',

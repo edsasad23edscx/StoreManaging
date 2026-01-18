@@ -168,9 +168,7 @@ const buildFormData = (): FormData => {
   formData.append('description', form.value.description)
 
   const categoryId = form.value.category_id
-  if (categoryId !== null) {
-    formData.append('category_id', categoryId.toString())
-  }
+  formData.append('category_id', categoryId === null ? '' : categoryId.toString())
 
   formData.append('price', (form.value.price ?? 0).toString())
   formData.append('stock_quantity', (form.value.stock_quantity ?? 0).toString())
