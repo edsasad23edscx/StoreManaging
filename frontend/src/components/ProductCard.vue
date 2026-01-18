@@ -17,9 +17,9 @@ const STOCK_STATUSES = {
 } as const
 
 const PRICE_FORMAT = {
-  LOCALE: 'en-US',
+  LOCALE: 'pl-PL',
   STYLE: 'currency',
-  CURRENCY: 'USD',
+  CURRENCY: 'PLN',
 } as const
 
 const stockStatus = computed(() => {

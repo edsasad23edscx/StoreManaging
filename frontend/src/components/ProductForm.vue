@@ -25,6 +25,32 @@ const fileError = ref('')
 const fileInput = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
 
+// Per-field error messages
+const fieldErrors = ref<{
+  name: string
+  barcode: string
+  price: string
+  stock_quantity: string
+  minimum_stock: string
+}>({
+  name: '',
+  barcode: '',
+  price: '',
+  stock_quantity: '',
+  minimum_stock: '',
+})
+
+const currentImageName = computed(() => {
+  if (fileInput.value) {
+    return fileInput.value.name
+  }
+  if (props.initialData?.image) {
+    const imagePath = props.initialData.image
+    return imagePath.split('/').pop() || 'Brak nazwy'
+  }
+  return null
+})
+
 const form = ref({
   name: '',
   barcode: '',
@@ -132,8 +158,78 @@ const buildFormData = (): FormData => {
   return formData
 }
 
+// Field validation functions
+const validateName = (): boolean => {
+  if (!form.value.name.trim()) {
+    fieldErrors.value.name = 'Nazwa produktu jest wymagana'
+    return false
+  }
+  fieldErrors.value.name = ''
+  return true
+}
+
+const validateBarcode = (): boolean => {
+  const barcode = form.value.barcode
+  if (!barcode) {
+    fieldErrors.value.barcode = ''
+    return true // Barcode is optional
+  }
+  if (!/^\d+$/.test(barcode)) {
+    fieldErrors.value.barcode = 'Kod kreskowy może zawierać tylko cyfry'
+    return false
+  }
+  if (barcode.length !== 13) {
+    fieldErrors.value.barcode = 'Kod kreskowy musi mieć dokładnie 13 cyfr'
+    return false
+  }
+  fieldErrors.value.barcode = ''
+  return true
+}
+
+const validatePrice = (): boolean => {
+  if (form.value.price < 0) {
+    fieldErrors.value.price = 'Cena nie może być ujemna'
+    return false
+  }
+  fieldErrors.value.price = ''
+  return true
+}
+
+const validateStockQuantity = (): boolean => {
+  if (form.value.stock_quantity < 0) {
+    fieldErrors.value.stock_quantity = 'Ilość nie może być ujemna'
+    return false
+  }
+  fieldErrors.value.stock_quantity = ''
+  return true
+}
+
+const validateMinimumStock = (): boolean => {
+  if (form.value.minimum_stock < 0) {
+    fieldErrors.value.minimum_stock = 'Minimalna ilość nie może być ujemna'
+    return false
+  }
+  fieldErrors.value.minimum_stock = ''
+  return true
+}
+
+const validateForm = (): boolean => {
+  const nameValid = validateName()
+  const barcodeValid = validateBarcode()
+  const priceValid = validatePrice()
+  const stockValid = validateStockQuantity()
+  const minStockValid = validateMinimumStock()
+
+  return nameValid && barcodeValid && priceValid && stockValid && minStockValid
+}
+
 const handleSubmit = () => {
   fileError.value = ''
+
+  if (!validateForm()) {
+    return
+  }
+
   const formData = buildFormData()
   emit('submit', formData)
 }
@@ -151,12 +247,17 @@ const handleSubmit = () => {
         >
           <img :src="imageUrl" class="w-full h-full object-cover" />
         </div>
-        <input
-          type="file"
-          @change="handleFileUpload"
-          accept="image/*"
-          class="text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50 file:cursor-pointer file:transition-colors"
-        />
+        <div class="flex flex-col gap-1">
+          <input
+            type="file"
+            @change="handleFileUpload"
+            accept="image/*"
+            class="text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/50 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800/50 file:cursor-pointer file:transition-colors"
+          />
+          <p v-if="currentImageName" class="text-xs text-slate-500 dark:text-slate-400">
+            Aktualny plik: <span class="font-medium">{{ currentImageName }}</span>
+          </p>
+        </div>
       </div>
       <p v-if="fileError" class="text-red-600 dark:text-red-400 text-sm">{{ fileError }}</p>
     </div>
@@ -166,20 +267,26 @@ const handleSubmit = () => {
       v-model="form.name"
       label="Nazwa Produktu"
       placeholder="np. Chleb Wiejski"
+      :error="fieldErrors.name"
+      @blur="validateName"
     />
 
     <BaseInput
       id="barcode"
       v-model="form.barcode"
-      label="Kod Kreskowy"
+      label="Kod Kreskowy (13 cyfr)"
       placeholder="np. 5901234567890"
+      maxlength="13"
+      pattern="[0-9]*"
+      :error="fieldErrors.barcode"
+      @blur="validateBarcode"
     />
 
     <div class="flex flex-col gap-1.5">
       <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Kategoria</label>
       <div class="flex gap-2">
         <select
-          v-model.number="form.category_id"
+          v-model="form.category_id"
           class="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
         >
           <option :value="null">Inne</option>
@@ -205,6 +312,8 @@ const handleSubmit = () => {
         step="0.01"
         min="0"
         placeholder="0.00"
+        :error="fieldErrors.price"
+        @blur="validatePrice"
       />
       <BaseInput
         id="stock"
@@ -213,6 +322,8 @@ const handleSubmit = () => {
         type="number"
         min="0"
         placeholder="0"
+        :error="fieldErrors.stock_quantity"
+        @blur="validateStockQuantity"
       />
     </div>
 
@@ -225,9 +336,18 @@ const handleSubmit = () => {
         type="number"
         min="0"
         placeholder="0"
-        class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+        :class="[
+          'px-4 py-2.5 rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 transition-all outline-none',
+          fieldErrors.minimum_stock
+            ? 'border-red-400 dark:border-red-500 focus:ring-red-500/20 focus:border-red-500'
+            : 'border-slate-200 dark:border-slate-700 focus:ring-indigo-500/20 focus:border-indigo-500',
+        ]"
+        @blur="validateMinimumStock"
       />
-      <p class="text-xs text-slate-500 dark:text-slate-400">
+      <p v-if="fieldErrors.minimum_stock" class="text-xs text-red-500 dark:text-red-400">
+        {{ fieldErrors.minimum_stock }}
+      </p>
+      <p v-else class="text-xs text-slate-500 dark:text-slate-400">
         Będzie wyświetlany alert gdy ilość spadnie poniżej tej wartości
       </p>
     </div>
