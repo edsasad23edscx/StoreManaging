@@ -6,6 +6,7 @@ import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 import { useTheme } from '@/composables/useTheme'
+import { translateMessage } from '@/lib/errorTranslations'
 
 // Initialize theme
 useTheme()
@@ -25,7 +26,8 @@ const handleLogin = async () => {
     router.push({ name: 'shelf' })
   } catch (e: any) {
     console.error(e)
-    error.value = e.response?.data?.message || e.message || 'Wystąpił błąd'
+    const rawError = e.response?.data?.message || e.message || 'Wystąpił błąd'
+    error.value = translateMessage(rawError)
   } finally {
     loading.value = false
   }
@@ -33,7 +35,9 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 relative overflow-hidden transition-colors">
+  <div
+    class="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 relative overflow-hidden transition-colors"
+  >
     <!-- Theme Toggle -->
     <div class="absolute top-4 right-4 z-20">
       <ThemeToggle />

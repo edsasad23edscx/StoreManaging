@@ -22,10 +22,22 @@ const ERROR_RULE_TRANSLATIONS: Record<string, string> = {
   image: 'musi być obrazem',
 } as const
 
+const MESSAGE_TRANSLATIONS: Record<string, string> = {
+  'Invalid login details': 'Nieprawidłowy email lub hasło',
+  'Invalid credentials': 'Nieprawidłowe dane logowania',
+  'These credentials do not match our records': 'Podane dane nie pasują do naszych rekordów',
+  'The email field is required': 'Pole email jest wymagane',
+  'The password field is required': 'Pole hasło jest wymagane',
+  'The email field must be a valid email address': 'Pole email musi być poprawnym adresem email',
+  Unauthenticated: 'Nieautoryzowany dostęp',
+  'Network Error': 'Błąd sieci. Sprawdź połączenie z internetem',
+  'Request failed with status code 401': 'Nieprawidłowy email lub hasło',
+  'Request failed with status code 422': 'Nieprawidłowe dane formularza',
+  'Request failed with status code 500': 'Błąd serwera. Spróbuj ponownie później',
+} as const
+
 const cleanLaravelErrorMessage = (error: string): string => {
-  return error
-    .replace(/^The\s+/i, '')
-    .replace(/\s+field\s+is\s+/, ' ')
+  return error.replace(/^The\s+/i, '').replace(/\s+field\s+is\s+/, ' ')
 }
 
 const translateFieldNames = (message: string): string => {
@@ -44,7 +56,19 @@ const translateErrorRules = (message: string): string => {
   return result
 }
 
+export const translateMessage = (message: string): string => {
+  if (MESSAGE_TRANSLATIONS[message]) {
+    return MESSAGE_TRANSLATIONS[message]
+  }
+  return message
+}
+
 export const translateError = (error: string): string => {
+  // First check for direct translation
+  if (MESSAGE_TRANSLATIONS[error]) {
+    return MESSAGE_TRANSLATIONS[error]
+  }
+
   let result = cleanLaravelErrorMessage(error)
   result = result.charAt(0).toUpperCase() + result.slice(1)
   result = translateFieldNames(result)
