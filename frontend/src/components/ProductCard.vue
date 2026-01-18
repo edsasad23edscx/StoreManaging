@@ -10,18 +10,21 @@ const emit = defineEmits(['edit', 'delete'])
 
 const API_BASE_URL = '/api'
 
+/** Konfiguracja statusów magazynowych z kolorami */
 const STOCK_STATUSES = {
   OUT_OF_STOCK: { color: 'bg-red-500', label: 'Brak w magazynie' },
   LOW_STOCK: { color: 'bg-amber-500', label: 'Niska ilość' },
   AVAILABLE: { color: 'bg-emerald-500', label: 'Dostępny' },
 } as const
 
+/** Konfiguracja formatu ceny (PLN) */
 const PRICE_FORMAT = {
   LOCALE: 'pl-PL',
   STYLE: 'currency',
   CURRENCY: 'PLN',
 } as const
 
+/** Określa status magazynowy na podstawie ilości */
 const stockStatus = computed(() => {
   const { stock_quantity, minimum_stock } = props.product
 
@@ -30,6 +33,7 @@ const stockStatus = computed(() => {
   return STOCK_STATUSES.AVAILABLE
 })
 
+/** Formatuje cenę do wyświetlenia (np. "12,50 zł") */
 const priceFormatted = computed(() => {
   return new Intl.NumberFormat(PRICE_FORMAT.LOCALE, {
     style: PRICE_FORMAT.STYLE,

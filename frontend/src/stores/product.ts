@@ -1,13 +1,18 @@
+/**
+ * Store produktów - zarządza stanem i operacjami CRUD.
+ */
 import { defineStore } from 'pinia'
 import api from '@/lib/axios'
 import { ref } from 'vue'
 import type { Product } from '@/types/product'
 
+/** Filtry do wyszukiwania produktów */
 interface ProductFilters {
   search?: string
   category_id?: number | string
 }
 
+/** Dane formularza produktu */
 interface ProductFormData {
   name: string
   barcode?: string
@@ -25,9 +30,12 @@ const API_ENDPOINTS = {
 } as const
 
 export const useProductStore = defineStore('product', () => {
+  /** Lista produktów */
   const products = ref<Product[]>([])
+  /** Stan ładowania */
   const loading = ref(false)
 
+  /** Buduje parametry zapytania z filtrów */
   const buildQueryParams = (filters: ProductFilters): URLSearchParams => {
     const params = new URLSearchParams()
     if (filters.search) params.append('search', filters.search)
@@ -35,6 +43,7 @@ export const useProductStore = defineStore('product', () => {
     return params
   }
 
+  /** Pobiera listę produktów z opcjonalnymi filtrami */
   async function fetchProducts(filters: ProductFilters = {}) {
     loading.value = true
     try {
@@ -49,6 +58,7 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  /** Dodaje nowy produkt */
   async function addProduct(product: FormData) {
     try {
       const response = await api.post(API_ENDPOINTS.PRODUCTS, product)
@@ -60,6 +70,7 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  /** Aktualizuje istniejący produkt */
   async function updateProduct(id: number, data: FormData | ProductFormData) {
     try {
       let response
@@ -81,6 +92,7 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  /** Usuwa produkt o podanym ID */
   async function deleteProduct(id: number) {
     try {
       await api.delete(API_ENDPOINTS.PRODUCT_BY_ID(id))

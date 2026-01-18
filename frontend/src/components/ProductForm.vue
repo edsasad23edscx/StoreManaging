@@ -13,19 +13,25 @@ const props = defineProps<{
 
 const emit = defineEmits(['submit'])
 
+/** Bazowy URL API */
 const API_BASE_URL = '/api'
-const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2MB
+/** Maksymalny rozmiar pliku obrazka (2MB) */
+const MAX_FILE_SIZE = 2 * 1024 * 1024
 const API_ENDPOINTS = {
   CATEGORIES: '/categories',
 } as const
 
+/** Lista kategorii pobrana z API */
 const categories = ref<Category[]>([])
 const showCategoryManagement = ref(false)
+/** Komunikat błędu dla pola pliku */
 const fileError = ref('')
+/** Wybrany plik obrazka */
 const fileInput = ref<File | null>(null)
+/** URL podglądu wybranego obrazka */
 const previewUrl = ref<string | null>(null)
 
-// Per-field error messages
+/** Komunikaty błędów walidacji dla poszczególnych pól */
 const fieldErrors = ref<{
   name: string
   barcode: string
@@ -40,6 +46,10 @@ const fieldErrors = ref<{
   minimum_stock: '',
 })
 
+/**
+ * Zwraca nazwę aktualnego pliku obrazka.
+ * Priorytet: nowo wybrany plik > istniejący obrazek z initialData
+ */
 const currentImageName = computed(() => {
   if (fileInput.value) {
     return fileInput.value.name
@@ -61,6 +71,7 @@ const form = ref({
   minimum_stock: 0,
 })
 
+/** Pobiera listę kategorii z API */
 const loadCategories = async () => {
   try {
     const response = await api.get(API_ENDPOINTS.CATEGORIES)
@@ -74,6 +85,10 @@ onMounted(async () => {
   await loadCategories()
 })
 
+/**
+ * Zwraca URL obrazka do wyświetlenia.
+ * Priorytet: podgląd nowego pliku > istniejący obrazek
+ */
 const imageUrl = computed(() => {
   if (previewUrl.value) return previewUrl.value
   if (props.initialData?.image) {
@@ -111,6 +126,11 @@ watch(
   { immediate: true },
 )
 
+/**
+ * Sprawdza czy plik nie przekracza maksymalnego rozmiaru.
+ * @param file - Plik do sprawdzenia
+ * @returns true jeśli rozmiar jest OK
+ */
 const validateFileSize = (file: File): boolean => {
   if (file.size > MAX_FILE_SIZE) {
     fileError.value = 'Plik jest zbyt duży. Maksymalny rozmiar to 2MB.'
@@ -119,6 +139,7 @@ const validateFileSize = (file: File): boolean => {
   return true
 }
 
+/** Obsługuje wybór pliku obrazka przez użytkownika */
 const handleFileUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   fileError.value = ''
@@ -136,6 +157,10 @@ const handleFileUpload = (event: Event) => {
   }
 }
 
+/**
+ * Buduje obiekt FormData z danych formularza.
+ * Używane do wysyłki na serwer (obsługuje pliki).
+ */
 const buildFormData = (): FormData => {
   const formData = new FormData()
   formData.append('name', form.value.name)
@@ -158,7 +183,7 @@ const buildFormData = (): FormData => {
   return formData
 }
 
-// Field validation functions
+/** Waliduje pole nazwy produktu (wymagane) */
 const validateName = (): boolean => {
   if (!form.value.name.trim()) {
     fieldErrors.value.name = 'Nazwa produktu jest wymagana'
@@ -168,6 +193,7 @@ const validateName = (): boolean => {
   return true
 }
 
+/** Waliduje kod kreskowy (opcjonalny, 13 cyfr) */
 const validateBarcode = (): boolean => {
   const barcode = form.value.barcode
   if (!barcode) {
@@ -186,6 +212,7 @@ const validateBarcode = (): boolean => {
   return true
 }
 
+/** Waliduje cenę (nie może być ujemna) */
 const validatePrice = (): boolean => {
   if (form.value.price < 0) {
     fieldErrors.value.price = 'Cena nie może być ujemna'
@@ -195,6 +222,7 @@ const validatePrice = (): boolean => {
   return true
 }
 
+/** Waliduje ilość w magazynie (nie może być ujemna) */
 const validateStockQuantity = (): boolean => {
   if (form.value.stock_quantity < 0) {
     fieldErrors.value.stock_quantity = 'Ilość nie może być ujemna'
@@ -204,6 +232,7 @@ const validateStockQuantity = (): boolean => {
   return true
 }
 
+/** Waliduje minimalną ilość (nie może być ujemna) */
 const validateMinimumStock = (): boolean => {
   if (form.value.minimum_stock < 0) {
     fieldErrors.value.minimum_stock = 'Minimalna ilość nie może być ujemna'
@@ -213,6 +242,7 @@ const validateMinimumStock = (): boolean => {
   return true
 }
 
+/** Waliduje wszystkie pola formularza */
 const validateForm = (): boolean => {
   const nameValid = validateName()
   const barcodeValid = validateBarcode()
@@ -223,6 +253,7 @@ const validateForm = (): boolean => {
   return nameValid && barcodeValid && priceValid && stockValid && minStockValid
 }
 
+/** Obsługuje wysłanie formularza po walidacji */
 const handleSubmit = () => {
   fileError.value = ''
 

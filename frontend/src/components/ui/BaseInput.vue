@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * Komponent BaseInput - uniwersalne pole tekstowe z walidacją.
+ * Obsługuje różne typy inputów, wyświetla błędy i etykiety.
+ */
 import { computed } from 'vue'
 
 const props = withDefaults(
@@ -23,11 +27,13 @@ const props = withDefaults(
 
 const emit = defineEmits(['update:modelValue', 'blur'])
 
+/** Dwukierunkowe wiązanie wartości pola */
 const value = computed({
   get: () => props.modelValue,
   set: (val) => emit('update:modelValue', val),
 })
 
+/** Klasy CSS zależne od stanu błędu */
 const inputClasses = computed(() => {
   const base =
     'px-4 py-2.5 rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 transition-all outline-none placeholder:text-slate-400'
