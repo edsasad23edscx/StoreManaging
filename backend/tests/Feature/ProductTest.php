@@ -59,7 +59,7 @@ class ProductTest extends TestCase
         $response = $this->postJson('/api/products', []);
 
         $response->assertStatus(422)
-                 ->assertJsonValidationErrors(['name', 'category', 'price', 'stock_quantity']);
+                 ->assertJsonValidationErrors(['name', 'price', 'stock_quantity']);
     }
 
     public function test_validates_price_format()

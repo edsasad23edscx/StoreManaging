@@ -36,7 +36,11 @@ class ProductFactory extends Factory
         ];
 
         $categories = Category::all();
-        $category = $categories->random();
+        if ($categories->isEmpty()) {
+            $category = Category::create(['name' => 'Owoce', 'slug' => 'owoce']);
+        } else {
+            $category = $categories->random();
+        }
         $categoryName = $category->name;
 
         $images = $categoryMapping[$categoryName] ?? ['placeholder.png'];
